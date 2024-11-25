@@ -1,4 +1,6 @@
 import 'package:absensi/main.dart';
+import 'package:absensi/screens/daftar_guru.dart';
+import 'package:absensi/screens/daftar_siswa.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/screens/absensi_siswa.dart';
 import 'package:absensi/screens/absensi_guru.dart';
@@ -17,7 +19,7 @@ class NavigationDrawer extends StatelessWidget {
             color: Color(0xFF6d5f7c),
             padding: EdgeInsets.all(16.0),
             width: double.infinity,
-            height: 100.0,
+            height: 200.0,
             child: Center(
               child: Text(
                 'Progressive Learning Center',
@@ -66,7 +68,7 @@ class NavigationDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AbsensiGuruScreen()),
+                MaterialPageRoute(builder: (context) => DaftarSiswa()),
               );
             },
           ),
@@ -76,7 +78,7 @@ class NavigationDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AbsensiGuruScreen()),
+                MaterialPageRoute(builder: (context) => DaftarGuru()),
               );
             },
           ),

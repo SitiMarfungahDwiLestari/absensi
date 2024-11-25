@@ -4,6 +4,7 @@ import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false, // Menonaktifkan banner DEBUG
     home: HomeScreen(),
   ));
 }
@@ -19,7 +20,14 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                CustomSliverAppBar(title: 'Presensi Guru'),
+                CustomSliverAppBar(
+                  title:
+                      'Presensi Hari Ini', // Mengatur panjang search bar menjadi 200
+                  onAddPressed: () {
+                    // Aksi ketika ikon "+" ditekan
+                    print('Tambah data!');
+                  },
+                ),
                 SliverList(
                   delegate: SliverChildListDelegate([
                     Padding(

@@ -41,7 +41,13 @@ class _AbsensiGuruScreenState extends State<AbsensiGuruScreen> {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                CustomSliverAppBar(title: 'Presensi Guru'),
+                CustomSliverAppBar(
+                  title: 'Presensi Guru',
+                  onAddPressed: () {
+                    // Aksi ketika ikon "+" ditekan
+                    print('Tambah data!');
+                  },
+                ),
                 // Menggunakan SliverToBoxAdapter untuk menampilkan konten di bawah AppBar
                 SliverToBoxAdapter(
                   child: Padding(
