@@ -1,9 +1,10 @@
+import 'package:absensi/screens/widget/silver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/api_service.dart';
 import 'package:absensi/models/absensi.dart';
 import 'package:intl/intl.dart';
 import 'package:absensi/screens/absensi_siswa.dart';
-import 'package:absensi/screens/navigation_drawer.dart' as custom;
+import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
 
 class AbsensiGuruScreen extends StatefulWidget {
   @override
@@ -40,24 +41,7 @@ class _AbsensiGuruScreenState extends State<AbsensiGuruScreen> {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  backgroundColor: Color(0xFFbdaec6),
-                  title: Text(
-                    'Presensi Guru',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  pinned: true,
-                  expandedHeight: 60,
-                  automaticallyImplyLeading: false,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      color: Color(0xFF666666),
-                    ),
-                  ),
-                ),
+                CustomSliverAppBar(title: 'Presensi Guru'),
                 // Menggunakan SliverToBoxAdapter untuk menampilkan konten di bawah AppBar
                 SliverToBoxAdapter(
                   child: Padding(

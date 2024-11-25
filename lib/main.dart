@@ -1,5 +1,6 @@
+import 'package:absensi/screens/widget/silver_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi/screens/navigation_drawer.dart' as custom;
+import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
 
 void main() {
   runApp(MaterialApp(
@@ -18,24 +19,7 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  automaticallyImplyLeading: false,
-                  backgroundColor: Color(0xFFbdaec6),
-                  title: Text(
-                    'Presensi Hari Ini',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  pinned: true,
-                  expandedHeight: 60,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      color: Color(0xFF666666),
-                    ),
-                  ),
-                ),
+                CustomSliverAppBar(title: 'Presensi Guru'),
                 SliverList(
                   delegate: SliverChildListDelegate([
                     Padding(
