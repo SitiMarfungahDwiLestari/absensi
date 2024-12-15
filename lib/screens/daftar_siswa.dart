@@ -1,6 +1,9 @@
+import 'package:absensi/api_service.dart';
+import 'package:absensi/models/absensi.dart';
 import 'package:absensi/screens/widget/silver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
+import 'package:intl/intl.dart';
 
 class DaftarSiswa extends StatefulWidget {
   const DaftarSiswa({super.key});
@@ -51,7 +54,12 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                           },
                           child: GestureDetector(
                             onTap: () {
-                              print('Kelas Reguler');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => KelasRegulerPage(),
+                                ),
+                              );
                             },
                             child: Container(
                               width: 150, // Ukuran tombol
@@ -213,6 +221,95 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class KelasRegulerPage extends StatefulWidget {
+  @override
+  _KelasRegulerPageState createState() => _KelasRegulerPageState();
+}
+
+class _KelasRegulerPageState extends State<KelasRegulerPage> {
+  // Fungsi untuk memformat tanggal
+  String formatTanggal(String tanggal) {
+    try {
+      DateTime parsedDate = DateTime.parse(tanggal);
+      return DateFormat('dd/MM/yyyy').format(parsedDate);
+    } catch (e) {
+      return tanggal; // Jika terjadi error, kembalikan tanggal asli
+    }
+  }
+
+  // Mendapatkan data siswa dari API
+  Future<List<Absensi>> fetchSiswaData() async {
+    try {
+      return await ApiService()
+          .getAbsensiData("Siswa"); // Ubah "Siswa" sesuai kebutuhan
+    } catch (e) {
+      throw Exception('Gagal memuat data: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Kelas Reguler'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Daftar Siswa Kelas Reguler",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 16),
+            // FutureBuilder untuk memuat data siswa
+            Expanded(
+              child: FutureBuilder<List<Absensi>>(
+                future: fetchSiswaData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('Tidak ada data siswa.'));
+                  } else {
+                    var siswaList = snapshot.data!;
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: const [
+                          DataColumn(label: Text('Nama Lengkap')),
+                          DataColumn(label: Text('Kelas')),
+                          DataColumn(label: Text('No HP')),
+                          DataColumn(label: Text('Alamat')),
+                        ],
+                        rows: siswaList.map((siswa) {
+                          return DataRow(cells: [
+                            DataCell(Text(siswa.namaLengkap)),
+                            DataCell(Text(siswa.pilihanKelas)),
+                            DataCell(Text(siswa.noHpEmail)),
+                            DataCell(Text(siswa.alamat)),
+                          ]);
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

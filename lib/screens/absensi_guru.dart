@@ -84,8 +84,8 @@ class _AbsensiGuruScreenState extends State<AbsensiGuruScreen> {
                                     return DataRow(cells: [
                                       DataCell(Text(
                                           formatTanggal(absensi.timestamp))),
-                                      DataCell(Text(absensi.nama)),
-                                      DataCell(Text(absensi.nisNip)),
+                                      //DataCell(Text(absensi.nama)),
+                                      //DataCell(Text(absensi.nisNip)),
                                     ]);
                                   }).toList(),
                                 ),

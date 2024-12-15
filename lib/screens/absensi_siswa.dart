@@ -41,8 +41,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
             child: CustomScrollView(
               slivers: [
                 CustomSliverAppBar(
-                  title:
-                      'Presensi Siswa', // Mengatur panjang search bar menjadi 200
+                  title: 'Presensi Siswa',
                   onAddPressed: () {
                     // Aksi ketika ikon "+" ditekan
                     print('Tambah data!');
@@ -63,7 +62,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return CircularProgressIndicator();
+                              return Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else if (!snapshot.hasData ||
@@ -78,14 +77,16 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
                                   columns: const [
                                     DataColumn(label: Text('Waktu Absen')),
                                     DataColumn(label: Text('Nama')),
-                                    DataColumn(label: Text('NIS')),
+                                    DataColumn(label: Text('Kelas')),
                                   ],
                                   rows: absensiList.map((absensi) {
                                     return DataRow(cells: [
                                       DataCell(Text(
                                           formatTanggal(absensi.timestamp))),
-                                      DataCell(Text(absensi.nama)),
-                                      DataCell(Text(absensi.nisNip)),
+                                      DataCell(
+                                          Text(absensi.namaLengkap ?? '-')),
+                                      DataCell(
+                                          Text(absensi.pilihanKelas ?? '-')),
                                     ]);
                                   }).toList(),
                                 ),
