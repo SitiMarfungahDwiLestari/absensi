@@ -9,12 +9,13 @@ class Absensi {
   final String namaOrangTua;
   final String noHpOrangTua;
   final String asalSekolah;
-  // final String kelas;
-  // final String mataPelajaranPilihan;
-  // final String pilihanSekolah;
-  // final String jurusanSMA_SMK;
-  // final String mataPelajaranPilihanSMA;
-  // final String pilihanJurusanPerguruanTinggi;
+  final String kelas;
+  final String mataPelajaranPilihan;
+  final String pilihanSekolah;
+  final String jurusanSMA_SMK;
+  final String mataPelajaranPilihanSMA;
+  final String pilihanJurusanPerguruanTinggi;
+  final String statusPembayaran;
 
   Absensi({
     required this.timestamp,
@@ -27,12 +28,13 @@ class Absensi {
     required this.namaOrangTua,
     required this.noHpOrangTua,
     required this.asalSekolah,
-    // required this.kelas,
-    // required this.mataPelajaranPilihan,
-    // required this.pilihanSekolah,
-    // required this.jurusanSMA_SMK,
-    // required this.mataPelajaranPilihanSMA,
-    // required this.pilihanJurusanPerguruanTinggi,
+    required this.kelas,
+    required this.mataPelajaranPilihan,
+    required this.pilihanSekolah,
+    required this.jurusanSMA_SMK,
+    required this.mataPelajaranPilihanSMA,
+    required this.pilihanJurusanPerguruanTinggi,
+    required this.statusPembayaran,
   });
 
   factory Absensi.fromJson(Map<String, dynamic> json) {
@@ -47,13 +49,14 @@ class Absensi {
       namaOrangTua: json['Nama Orang Tua'].toString(),
       noHpOrangTua: json['No HP Orang Tua'].toString(),
       asalSekolah: json['Asal Sekolah'].toString(),
-      // kelas: json['Kelas'].toString(),
-      // mataPelajaranPilihan: json['Mata Pelajaran Pilihan'].toString(),
-      // pilihanSekolah: json['Pilihan Sekolah (3 Pilihan)'].toString(),
-      // jurusanSMA_SMK: json['Jurusan (SMA/SMK)'].toString(),
-      // mataPelajaranPilihanSMA: json['Mata Pelajaran Pilihan (SMA)'].toString(),
-      // pilihanJurusanPerguruanTinggi:
-      //     json['Pilihan Jurusan Perguruan Tinggi (3 Pilihan)'].toString(),
+      kelas: json['Kelas'].toString(),
+      mataPelajaranPilihan: json['Mata Pelajaran Pilihan'].toString(),
+      pilihanSekolah: json['Pilihan Sekolah (3 Pilihan)'].toString(),
+      jurusanSMA_SMK: json['Jurusan (SMA/SMK)'].toString(),
+      mataPelajaranPilihanSMA: json['Mata Pelajaran Pilihan (SMA)'].toString(),
+      pilihanJurusanPerguruanTinggi:
+          json['Pilihan Jurusan Perguruan Tinggi (3 Pilihan)'].toString(),
+      statusPembayaran: json['Status Pembayaran'].toString(),
     );
   }
 }
