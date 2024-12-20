@@ -1,11 +1,21 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:absensi/main.dart';
 import 'package:absensi/screens/daftar_guru.dart';
 import 'package:absensi/screens/daftar_siswa.dart';
-import 'package:flutter/material.dart';
 import 'package:absensi/screens/absensi_siswa.dart';
 import 'package:absensi/screens/absensi_guru.dart';
 
 class NavigationDrawer extends StatelessWidget {
+  // Fungsi untuk membuka link URL Google Form
+  Future<void> _launchURL() async {
+    final Uri url = Uri.parse(
+        'https://docs.google.com/forms/d/e/1FAIpQLSdzJwgUzlmRVg_uFKaoTAeNYaKVBSfGkLKHM7QtcyIKa0X3Cw/viewform'); //ganti link GFORM 
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -96,10 +106,7 @@ class NavigationDrawer extends StatelessWidget {
             leading: Icon(Icons.app_registration, color: Colors.white),
             title: Text('Pendaftaran', style: TextStyle(color: Colors.white)),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AbsensiGuruScreen()),
-              );
+              _launchURL(); // Membuka Google Form saat diklik
             },
           ),
         ],

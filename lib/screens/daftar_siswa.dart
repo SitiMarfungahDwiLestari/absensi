@@ -232,84 +232,149 @@ class KelasRegulerPage extends StatefulWidget {
 }
 
 class _KelasRegulerPageState extends State<KelasRegulerPage> {
+  ScrollController _horizontalController = ScrollController();
+  ScrollController _verticalController = ScrollController();
+
   // Fungsi untuk memformat tanggal
   String formatTanggal(String tanggal) {
     try {
       DateTime parsedDate = DateTime.parse(tanggal);
-      return DateFormat('dd/MM/yyyy').format(parsedDate);
+      return DateFormat('dd/MM/yyyy-HH:mm').format(parsedDate);
     } catch (e) {
       return tanggal; // Jika terjadi error, kembalikan tanggal asli
     }
   }
 
   // Mendapatkan data siswa dari API
-  Future<List<Absensi>> fetchSiswaData() async {
-    try {
-      return await ApiService()
-          .getAbsensiData("Siswa"); // Ubah "Siswa" sesuai kebutuhan
-    } catch (e) {
-      throw Exception('Gagal memuat data: $e');
+  Stream<List<Absensi>> getSiswaStream() async* {
+    while (true) {
+      // Ambil data dari API setiap 5 detik
+      List<Absensi> data = await ApiService().getAbsensiData("Siswa");
+      yield data;
+      await Future.delayed(Duration(seconds: 5));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Kelas Reguler'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Daftar Siswa Kelas Reguler",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
-            // FutureBuilder untuk memuat data siswa
-            Expanded(
-              child: FutureBuilder<List<Absensi>>(
-                future: fetchSiswaData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('Tidak ada data siswa.'));
-                  } else {
-                    var siswaList = snapshot.data!;
+      body: Row(
+        children: [
+          custom.NavigationDrawer(),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                CustomSliverAppBar(
+                  title: 'Daftar Siswa',
+                  onAddPressed: () {
+                    // Aksi ketika ikon "+" ditekan
+                    print('Tambah data!');
+                  },
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        // Tabel Data Absensi
+                        StreamBuilder<List<Absensi>>(
+                          stream:
+                              getSiswaStream(), // Menggunakan stream untuk data dinamis
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Text('Tidak ada data absensi');
+                            } else {
+                              var absensiList = snapshot.data!;
 
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(label: Text('Nama Lengkap')),
-                          DataColumn(label: Text('Kelas')),
-                          DataColumn(label: Text('No HP')),
-                          DataColumn(label: Text('Alamat')),
-                        ],
-                        rows: siswaList.map((siswa) {
-                          return DataRow(cells: [
-                            DataCell(Text(siswa.namaLengkap)),
-                            DataCell(Text(siswa.pilihanKelas)),
-                            DataCell(Text(siswa.noHpEmail)),
-                            DataCell(Text(siswa.alamat)),
-                          ]);
-                        }).toList(),
-                      ),
-                    );
-                  }
-                },
-              ),
+                              return Column(
+                                children: [
+                                  // Scroll vertical
+                                  SingleChildScrollView(
+                                    scrollDirection:
+                                        Axis.vertical, // Scroll vertikal
+                                    controller: _verticalController,
+                                    child: SingleChildScrollView(
+                                      scrollDirection:
+                                          Axis.horizontal, // Scroll horizontal
+                                      controller: _horizontalController,
+                                      child: DataTable(
+                                        columns: const [
+                                          DataColumn(
+                                              label: Text('Waktu Absen')),
+                                          DataColumn(label: Text('Nama')),
+                                          DataColumn(
+                                              label:
+                                                  Text('Tempat/Tanggal Lahir')),
+                                          DataColumn(
+                                              label: Text('Jenis Kelamin')),
+                                          DataColumn(label: Text('Alamat')),
+                                          DataColumn(
+                                              label: Text('NoHP / Email')),
+                                          DataColumn(
+                                              label: Text('Nama Orangtua')),
+                                          DataColumn(
+                                              label: Text('NoHP Orangtua')),
+                                          DataColumn(
+                                              label: Text('Asal Sekolah')),
+                                        ],
+                                        rows: absensiList.map((absensi) {
+                                          return DataRow(cells: [
+                                            DataCell(Text(formatTanggal(
+                                                absensi.timestamp))),
+                                            DataCell(Text(
+                                                absensi.namaLengkap ?? '-')),
+                                            DataCell(Text(
+                                                absensi.tempatTanggalLahir ??
+                                                    '-')),
+                                            DataCell(Text(
+                                                absensi.jenisKelamin ?? '-')),
+                                            DataCell(
+                                                Text(absensi.alamat ?? '-')),
+                                            DataCell(
+                                                Text(absensi.noHpEmail ?? '-')),
+                                            DataCell(Text(
+                                                absensi.namaOrangTua ?? '-')),
+                                            DataCell(Text(
+                                                absensi.noHpOrangTua ?? '-')),
+                                            DataCell(Text(
+                                                absensi.asalSekolah ?? '-')),
+                                          ]);
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                  // Menambahkan scrollbar horizontal di bawah tabel
+                                  Container(
+                                    color: Colors.grey[200],
+                                    height: 10,
+                                    child: Scrollbar(
+                                      controller: _horizontalController,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: _horizontalController,
+                                        child: SizedBox(width: 1),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

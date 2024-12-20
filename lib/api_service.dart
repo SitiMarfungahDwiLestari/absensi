@@ -4,7 +4,8 @@ import 'package:absensi/models/absensi.dart';
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbyxOhTzIVLGkeO2OmWfS89OTOBffOvx63AhJ0mFUJ4ln7yDFADogpTOg5wfziRw0wE/exec';
+      'https://script.google.com/macros/s/AKfycbz0dVJgvyTzi3Yxs7z1W2lkuBMfVXzZtX1v2GbdlUvxiX2apLWTt4P8EixrnIwFaZBm/exec';
+  //'https://script.google.com/macros/s/AKfycbyxOhTzIVLGkeO2OmWfS89OTOBffOvx63AhJ0mFUJ4ln7yDFADogpTOg5wfziRw0wE/exec';
 
   Future<List<Absensi>> getAbsensiData(String user) async {
     try {
@@ -40,14 +41,6 @@ class ApiService {
     }
   }
 }
-
-
-
-
-
-
-
-
 
 // class ApiService {
 //   final String apiUrl =
