@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:absensi/models/absensi.dart';
 import 'package:absensi/api_service.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class DetailSiswa extends StatefulWidget {
   final Absensi absensi;
@@ -72,7 +73,6 @@ class _DetailSiswaState extends State<DetailSiswa> {
     });
 
     try {
-      // Kumpulkan hanya field yang berubah
       final Map<String, String> dataToUpdate = {};
 
       editedValues.forEach((key, value) {
@@ -81,7 +81,6 @@ class _DetailSiswaState extends State<DetailSiswa> {
         }
       });
 
-      // Selalu sertakan Nama Lengkap sebagai identifier
       dataToUpdate['Nama Lengkap'] = widget.absensi.namaLengkap;
 
       print('Sending updates for fields: ${dataToUpdate.keys.join(", ")}');
@@ -129,6 +128,79 @@ class _DetailSiswaState extends State<DetailSiswa> {
         });
       }
     }
+  }
+
+  Widget _buildQRCode() {
+    // Format data untuk QR code: ID|Nama|Kelas|Timestamp
+    String qrData =
+        "${widget.absensi.timestamp}|${widget.absensi.namaLengkap}|${widget.absensi.pilihanKelas}";
+
+    return Container(
+      width: 150,
+      height: 150,
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: QrImageView(
+              data: qrData,
+              version: QrVersions.auto,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Scan untuk presensi',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableDetailRow(String fieldName, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text(
+              fieldName,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: TextField(
+              controller: _controllers[fieldName],
+              focusNode: _focusNodes[fieldName],
+              onChanged: (newValue) {
+                setState(() {
+                  editedValues[fieldName] = newValue;
+                  checkForChanges();
+                });
+              },
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: fieldName,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -179,14 +251,7 @@ class _DetailSiswaState extends State<DetailSiswa> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: 100,
-                    height: 100,
-                    color: Colors.grey[300],
-                    child: const Center(
-                      child: Icon(Icons.qr_code, size: 40, color: Colors.grey),
-                    ),
-                  ),
+                  _buildQRCode(), // QR code widget
                 ],
               ),
               const SizedBox(width: 16),
@@ -202,42 +267,6 @@ class _DetailSiswaState extends State<DetailSiswa> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEditableDetailRow(String fieldName, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(
-              fieldName,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 2,
-            child: TextField(
-              controller: _controllers[fieldName],
-              focusNode: _focusNodes[fieldName],
-              onChanged: (newValue) {
-                setState(() {
-                  editedValues[fieldName] = newValue;
-                  checkForChanges();
-                });
-              },
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: fieldName,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

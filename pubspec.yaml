@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   http: ^1.2.2
+  qr_flutter: ^4.1.0
   url_launcher: ^6.3.1
   intl: ^0.20.0
   flutter:

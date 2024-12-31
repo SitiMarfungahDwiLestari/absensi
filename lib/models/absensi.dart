@@ -16,6 +16,7 @@ class Absensi {
   final String mataPelajaranPilihanSMA;
   final String pilihanJurusanPerguruanTinggi;
   final String statusPembayaran;
+  final String qrCode;
 
   Absensi({
     required this.timestamp,
@@ -35,6 +36,7 @@ class Absensi {
     required this.mataPelajaranPilihanSMA,
     required this.pilihanJurusanPerguruanTinggi,
     required this.statusPembayaran,
+    this.qrCode = '', 
   });
 
   factory Absensi.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,8 @@ class Absensi {
       pilihanJurusanPerguruanTinggi:
           json['Pilihan Jurusan Perguruan Tinggi (3 Pilihan)'].toString(),
       statusPembayaran: json['Status Pembayaran'].toString(),
+      qrCode: json['QR Code']?.toString() ?? '', 
+
     );
   }
 }
