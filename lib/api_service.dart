@@ -6,7 +6,7 @@ import 'package:absensi/models/absensi.dart';
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbyz46KGiTGKtY4w0ReEufFIwvuTfIn7C2P20W4nrdoudxFbAtu_3lnfy_NdI-Rwg7lG/exec';
+      'https://script.google.com/macros/s/AKfycbwaZjJ0kRqvrq7D7zk073c6P7yNNS1yQ0-K9zyJ0yoMb56xkmS7vgMqOs1vmcjLo4Ga/exec';
 
   // Fungsi untuk mendapatkan data absensi
   Future<List<Absensi>> getAbsensiData(String user) async {
@@ -99,6 +99,43 @@ class ApiService {
       return false;
     } catch (e) {
       print('Error updating guru: $e');
+      return false;
+    }
+  }
+
+  //delete Guru
+  Future<bool> deleteGuru(String namaLengkap) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'mode': 'deleteGuru',
+          'namaLengkap': namaLengkap,
+        }),
+      );
+
+      print('Delete response status: ${response.statusCode}');
+      print('Delete response body: ${response.body}');
+
+      if (response.statusCode == 302 &&
+          response.headers.containsKey('location')) {
+        final redirectResponse =
+            await http.get(Uri.parse(response.headers['location']!));
+        print('Delete redirect response: ${redirectResponse.body}');
+
+        if (redirectResponse.statusCode == 200) {
+          final responseData = json.decode(redirectResponse.body);
+          return responseData['status'] == 'success';
+        }
+      }
+
+      return false;
+    } catch (e) {
+      print('Error deleting guru: $e');
       return false;
     }
   }

@@ -108,23 +108,42 @@ class _DetailGuruState extends State<DetailGuru> {
               ),
             )
           else
-            TextButton.icon(
-              onPressed: hasChanges
-                  ? () async {
+            Row(
+              children: [
+                TextButton.icon(
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Konfirmasi Hapus'),
+                        content:
+                            Text('Hapus data guru ${widget.guru.namaLengkap}?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.red),
+                            child: const Text('Hapus'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
                       setState(() => isLoading = true);
                       try {
-                        final success = await _apiService.updateGuru({
-                          'Nama Lengkap': widget.guru.namaLengkap,
-                          'Alamat': _controllers['Alamat']?.text ?? '',
-                          'No HP': _controllers['No HP']?.text ?? '',
-                        });
-
+                        final success = await _apiService
+                            .deleteGuru(widget.guru.namaLengkap);
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(success
-                                  ? 'Data berhasil diupdate'
-                                  : 'Gagal mengupdate data'),
+                                  ? 'Data berhasil dihapus'
+                                  : 'Gagal menghapus data'),
                               backgroundColor:
                                   success ? Colors.green : Colors.red,
                             ),
@@ -135,12 +154,46 @@ class _DetailGuruState extends State<DetailGuru> {
                         if (mounted) setState(() => isLoading = false);
                       }
                     }
-                  : null,
-              icon: const Icon(Icons.save),
-              label: const Text("Simpan"),
-              style: TextButton.styleFrom(
-                foregroundColor: hasChanges ? null : Colors.grey,
-              ),
+                  },
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  label:
+                      const Text('Hapus', style: TextStyle(color: Colors.red)),
+                ),
+                TextButton.icon(
+                  onPressed: hasChanges
+                      ? () async {
+                          setState(() => isLoading = true);
+                          try {
+                            final success = await _apiService.updateGuru({
+                              'Nama Lengkap': widget.guru.namaLengkap,
+                              'Alamat': _controllers['Alamat']?.text ?? '',
+                              'No HP': _controllers['No HP']?.text ?? '',
+                            });
+
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(success
+                                      ? 'Data berhasil diupdate'
+                                      : 'Gagal mengupdate data'),
+                                  backgroundColor:
+                                      success ? Colors.green : Colors.red,
+                                ),
+                              );
+                              if (success) Navigator.pop(context, true);
+                            }
+                          } finally {
+                            if (mounted) setState(() => isLoading = false);
+                          }
+                        }
+                      : null,
+                  icon: const Icon(Icons.save),
+                  label: const Text("Simpan"),
+                  style: TextButton.styleFrom(
+                    foregroundColor: hasChanges ? null : Colors.grey,
+                  ),
+                ),
+              ],
             ),
         ],
       ),
