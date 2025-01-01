@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:absensi/main.dart';
-import 'package:absensi/screens/daftar_guru.dart';
-import 'package:absensi/screens/daftar_siswa.dart';
-import 'package:absensi/screens/absensi_siswa.dart';
-import 'package:absensi/screens/absensi_guru.dart';
+import 'package:absensi/screens/Guru/daftar_guru.dart';
+import 'package:absensi/screens/Siswa/daftar_siswa.dart';
+import 'package:absensi/screens/Siswa/absensi_siswa.dart';
+import 'package:absensi/screens/Guru/absensi_guru.dart';
 
 class NavigationDrawer extends StatelessWidget {
   // Fungsi untuk membuka link URL Google Form

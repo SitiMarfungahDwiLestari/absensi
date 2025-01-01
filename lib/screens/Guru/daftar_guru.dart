@@ -1,22 +1,23 @@
 import 'package:absensi/api_service.dart';
-import 'package:absensi/models/absensi.dart';
-import 'package:absensi/screens/detail_siswa.dart'; // Import halaman detail
+import 'package:absensi/models/guru.dart';
+import 'package:absensi/screens/Guru/detail_guru.dart';
 import 'package:absensi/screens/widget/silver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
 
-class DaftarSiswa extends StatefulWidget {
-  const DaftarSiswa({super.key});
+class DaftarGuru extends StatefulWidget {
+  const DaftarGuru({super.key});
 
   @override
-  State<DaftarSiswa> createState() => _DaftarSiswaState();
+  State<DaftarGuru> createState() => _DaftarGuruState();
 }
 
-class _DaftarSiswaState extends State<DaftarSiswa> {
-  // Stream untuk mendapatkan data absensi siswa secara berkala
-  Stream<List<Absensi>> getAbsensiStream() async* {
+class _DaftarGuruState extends State<DaftarGuru> {
+  final ApiService _apiService = ApiService();
+
+  Stream<List<Guru>> getGuruStream() async* {
     while (true) {
-      List<Absensi> data = await ApiService().getAbsensiData("Siswa");
+      List<Guru> data = await _apiService.getGuruData();
       yield data;
       await Future.delayed(Duration(seconds: 5));
     }
@@ -32,9 +33,9 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
             child: CustomScrollView(
               slivers: [
                 CustomSliverAppBar(
-                  title: 'Daftar Siswa',
+                  title: 'Data Guru',
                   onAddPressed: () {
-                    print('Tambah data!');
+                    print('Tambah guru!');
                   },
                 ),
                 SliverToBoxAdapter(
@@ -42,17 +43,19 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        StreamBuilder<List<Absensi>>(
-                          stream: getAbsensiStream(),
+                        StreamBuilder<List<Guru>>(
+                          stream: getGuruStream(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
-                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Text('Tidak ada data absensi');
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Text('Tidak ada data guru');
                             } else {
-                              var absensiList = snapshot.data!;
+                              var guruList = snapshot.data!;
 
                               return SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
@@ -61,35 +64,37 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                                   columns: const [
                                     DataColumn(label: Text('No')),
                                     DataColumn(label: Text('Nama')),
-                                    DataColumn(label: Text('Kelas')),
-                                    DataColumn(label: Text('Status Pembayaran')),
+                                    DataColumn(label: Text('Alamat')),
+                                    DataColumn(label: Text('No HP')),
                                   ],
-                                  rows: absensiList.asMap().entries.map((entry) {
-                                    final index = entry.key + 1; // Nomor urut
-                                    final absensi = entry.value;
+                                  rows: guruList.asMap().entries.map((entry) {
+                                    final index = entry.key + 1;
+                                    final guru = entry.value;
 
                                     return DataRow(
                                       onSelectChanged: (_) {
-                                        // Navigasi ke halaman DetailSiswa
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => DetailSiswa(absensi: absensi),
+                                            builder: (context) =>
+                                                DetailGuru(guru: guru),
                                           ),
                                         );
                                       },
                                       cells: [
                                         DataCell(Text(index.toString())),
-                                        DataCell(Text(absensi.namaLengkap ?? '-')),
-                                        DataCell(Text(absensi.pilihanKelas ?? '-')),
-                                        DataCell(Text(absensi.statusPembayaran ?? '-')),
+                                        DataCell(Text(guru.namaLengkap)),
+                                        DataCell(Text(guru.alamat)),
+                                        DataCell(Text(guru.noHp)),
                                       ],
-                                      color: MaterialStateProperty.resolveWith<Color?>(
+                                      color: MaterialStateProperty.resolveWith<
+                                          Color?>(
                                         (Set<MaterialState> states) {
-                                          if (states.contains(MaterialState.hovered)) {
-                                            return Colors.grey[200]; // Warna saat hover
+                                          if (states.contains(
+                                              MaterialState.hovered)) {
+                                            return Colors.grey[200];
                                           }
-                                          return null; // Warna default
+                                          return null;
                                         },
                                       ),
                                     );

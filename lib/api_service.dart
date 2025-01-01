@@ -6,7 +6,7 @@ import 'package:absensi/models/absensi.dart';
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbyOvcSFnWgnMhuReqFvFACfAnMmVVAvrj6AUzh_rpU0qXb1OSs0i2Hui67cWKvk5H8/exec';
+      'https://script.google.com/macros/s/AKfycbyz46KGiTGKtY4w0ReEufFIwvuTfIn7C2P20W4nrdoudxFbAtu_3lnfy_NdI-Rwg7lG/exec';
 
   // Fungsi untuk mendapatkan data absensi
   Future<List<Absensi>> getAbsensiData(String user) async {
@@ -66,6 +66,40 @@ class ApiService {
     } catch (e) {
       print('Error getting guru data: $e');
       return [];
+    }
+  }
+
+  Future<bool> updateGuru(Map<String, String> updatedData) async {
+    try {
+      final Map<String, String> requestData = {
+        'mode': 'editGuru',
+        'namaLengkap': updatedData['Nama Lengkap'] ?? '',
+        'alamat': updatedData['Alamat'] ?? '',
+        'noHp': updatedData['No HP'] ?? '',
+      };
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode(requestData),
+      );
+
+      if (response.statusCode == 302 &&
+          response.headers.containsKey('location')) {
+        final redirectResponse =
+            await http.get(Uri.parse(response.headers['location']!));
+        if (redirectResponse.statusCode == 200) {
+          final responseData = json.decode(redirectResponse.body);
+          return responseData['status'] == 'success';
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error updating guru: $e');
+      return false;
     }
   }
 

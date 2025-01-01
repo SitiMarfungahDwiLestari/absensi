@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:absensi/api_service.dart';
 import 'package:absensi/models/absensi.dart';
 import 'package:intl/intl.dart';
-import 'package:absensi/screens/absensi_siswa.dart';
+import 'package:absensi/screens/Siswa/absensi_siswa.dart';
 import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
 
 class AbsensiGuruScreen extends StatefulWidget {
