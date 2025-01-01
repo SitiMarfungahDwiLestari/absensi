@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:absensi/models/guru.dart';
 import 'package:http/http.dart' as http;
 import 'package:absensi/models/absensi.dart';
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbxTxIMQWYJrxC_q_Xg8MiwQyug5O3Jw0qcFAwntamPSSasTVtwVSSBs3DV5XMHnYVhz/exec';
+      'https://script.google.com/macros/s/AKfycbyOvcSFnWgnMhuReqFvFACfAnMmVVAvrj6AUzh_rpU0qXb1OSs0i2Hui67cWKvk5H8/exec';
 
   // Fungsi untuk mendapatkan data absensi
   Future<List<Absensi>> getAbsensiData(String user) async {
@@ -35,6 +36,36 @@ class ApiService {
     } catch (e) {
       print('Kesalahan mengambil data: $e');
       throw Exception('Kesalahan mengambil data: $e');
+    }
+  }
+
+  Future<List<Guru>> getGuruData() async {
+    try {
+      // Ubah URL untuk mengambil data dari sheet guru
+      final response = await http.get(
+        Uri.parse('$apiUrl?sheet=guru'), // Pastikan parameter sheet=guru
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success' &&
+            responseData['data'] is List) {
+          return responseData['data']
+              .map<Guru>((x) => Guru.fromJson(x))
+              .toList();
+        }
+      }
+
+      return [];
+    } catch (e) {
+      print('Error getting guru data: $e');
+      return [];
     }
   }
 
@@ -104,6 +135,43 @@ class ApiService {
     } catch (e) {
       print('Error during update: $e');
       throw Exception('Gagal mengupdate data: $e');
+    }
+  }
+
+  Future<bool> deleteAbsensi(String namaLengkap) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'mode': 'delete',
+          'namaLengkap': namaLengkap,
+        }),
+      );
+
+      print('Delete response status: ${response.statusCode}');
+      print('Delete response body: ${response.body}');
+
+      if (response.statusCode == 302 &&
+          response.headers.containsKey('location')) {
+        final redirectResponse =
+            await http.get(Uri.parse(response.headers['location']!));
+        print('Delete redirect status: ${redirectResponse.statusCode}');
+        print('Delete redirect body: ${redirectResponse.body}');
+
+        if (redirectResponse.statusCode == 200) {
+          final responseData = json.decode(redirectResponse.body);
+          return responseData['status'] == 'success';
+        }
+      }
+
+      return false;
+    } catch (e) {
+      print('Error during delete: $e');
+      return false;
     }
   }
 }

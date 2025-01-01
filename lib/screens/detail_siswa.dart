@@ -203,6 +203,54 @@ class _DetailSiswaState extends State<DetailSiswa> {
     );
   }
 
+  Future<void> _deleteData() async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi Hapus'),
+        content: Text(
+            'Apakah Anda yakin ingin menghapus data ${widget.absensi.namaLengkap}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await _apiService.deleteAbsensi(widget.absensi.namaLengkap);
+
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Data berhasil dihapus'),
+              backgroundColor: Colors.green));
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Gagal menghapus data'),
+              backgroundColor: Colors.red));
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<MapEntry<String, String>> validDetails = initialValues.entries
@@ -221,15 +269,29 @@ class _DetailSiswaState extends State<DetailSiswa> {
               ),
             )
           else
-            TextButton(
-              onPressed: hasChanges ? _saveChanges : null,
-              child: Text(
-                "Simpan",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: hasChanges ? null : Colors.grey,
+            Row(
+              children: [
+                // Tombol Delete
+                TextButton.icon(
+                  onPressed: _deleteData,
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  label: const Text(
+                    "Hapus",
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
-              ),
+                // Tombol Simpan yang sudah ada
+                TextButton(
+                  onPressed: hasChanges ? _saveChanges : null,
+                  child: Text(
+                    "Simpan",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: hasChanges ? null : Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
             ),
         ],
       ),

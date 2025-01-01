@@ -10,7 +10,7 @@ class NavigationDrawer extends StatelessWidget {
   // Fungsi untuk membuka link URL Google Form
   Future<void> _launchURL() async {
     final Uri url = Uri.parse(
-        'https://docs.google.com/forms/d/e/1FAIpQLSdzJwgUzlmRVg_uFKaoTAeNYaKVBSfGkLKHM7QtcyIKa0X3Cw/viewform'); //ganti link GFORM 
+        'https://docs.google.com/forms/d/e/1FAIpQLSdzJwgUzlmRVg_uFKaoTAeNYaKVBSfGkLKHM7QtcyIKa0X3Cw/viewform');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $url';
     }
