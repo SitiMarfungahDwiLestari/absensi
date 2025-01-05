@@ -50,31 +50,32 @@ class Siswa {
 
   factory Siswa.fromJson(Map<String, dynamic> json) {
     return Siswa(
-      timestamp: json['Timestamp'] ?? '',
-      kodeSiswa: json['Kode Siswa'] ?? '',
-      namaLengkap: json['Nama Lengkap'] ?? '',
+      timestamp: json['Timestamp']?.toString() ?? '',
+      kodeSiswa: json['Kode Siswa']?.toString() ?? '',
+      namaLengkap: json['Nama Lengkap']?.toString() ?? '',
       tanggalLahir: json['Tanggal Lahir'] != null
-          ? DateTime.parse(json['Tanggal Lahir'])
+          ? DateTime.parse(json['Tanggal Lahir'].toString())
           : DateTime.now(),
-      jenisKelamin: json['Jenis Kelamin'] ?? '',
-      alamat: json['Alamat'] ?? '',
-      pilihanKelas: json['Pilihan Kelas'] ?? '',
+      jenisKelamin: json['Jenis Kelamin']?.toString() ?? '',
+      alamat: json['Alamat']?.toString() ?? '',
+      pilihanKelas: json['Pilihan Kelas']?.toString() ?? '',
       noHpEmail: json['No Hp / Email']?.toString() ?? '',
-      namaOrangTua: json['Nama Orang Tua'] ?? '',
+      namaOrangTua: json['Nama Orang Tua']?.toString() ?? '',
       noHpOrangTua: json['No HP Orang Tua']?.toString() ?? '',
-      asalSekolahReguler: json['Asal Sekolah (Reguler)'] ?? '',
+      asalSekolahReguler: json['Asal Sekolah (Reguler)']?.toString() ?? '',
       kelasReguler: json['Kelas (Reguler)']?.toString() ?? '',
-      mataPelajaranPilihan: json['Mata Pelajaran Pilihan'] ?? '',
-      asalSekolahLolos: json['Asal Sekolah (lolos sekolah)'] ?? '',
-      kelasLoslosSekolah: json['Kelas (lolos sekolah)'] ?? '',
-      pilihanSekolah: json['Pilihan Sekolah (3 Pilihan)'] ?? '',
+      mataPelajaranPilihan: json['Mata Pelajaran Pilihan']?.toString() ?? '',
+      asalSekolahLolos: json['Asal Sekolah (lolos sekolah)']?.toString() ?? '',
+      kelasLoslosSekolah: json['Kelas (lolos sekolah)']?.toString() ?? '',
+      pilihanSekolah: json['Pilihan Sekolah (3 Pilihan)']?.toString() ?? '',
       kelasLolosPT: json['Kelas (Lolos PT)']?.toString() ?? '',
-      jurusanSMA: json['Jurusan (SMA/SMK)'] ?? '',
-      mataPelajaranPilihanSMA: json['Mata Pelajaran Pilihan (SMA)'] ?? '',
+      jurusanSMA: json['Jurusan (SMA/SMK)']?.toString() ?? '',
+      mataPelajaranPilihanSMA:
+          json['Mata Pelajaran Pilihan (SMA)']?.toString() ?? '',
       pilihanJurusanPT:
           json['Pilihan Jurusan Perguruan Tinggi (3 Pilihan)']?.toString() ??
               '',
-      statusPembayaran: json['Status Pembayaran'] ?? '',
+      statusPembayaran: json['Status Pembayaran']?.toString() ?? '',
       qrCode: json['QR Code'],
     );
   }

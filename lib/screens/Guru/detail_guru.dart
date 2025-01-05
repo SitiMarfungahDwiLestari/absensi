@@ -155,17 +155,87 @@ class _DetailGuruState extends State<DetailGuru> {
                       children: [
                         Column(
                           children: [
-                            Container(
-                              width: 160,
-                              height: 200,
-                              color: Colors.grey[300],
-                              child: const Center(
-                                child: Icon(Icons.person,
-                                    size: 40, color: Colors.grey),
-                              ),
-                            ),
                             const SizedBox(height: 16),
                             _buildQRCode(),
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Print Kartu Presensi'),
+                                      content: SingleChildScrollView(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(16),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.grey),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  if (guru != null) ...[
+                                                    Text(
+                                                      guru!.namaLengkap,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                        'Kode: ${guru!.kodeGuru}'),
+                                                    const SizedBox(height: 8),
+                                                    _buildQRCode(), // Menampilkan QR Code yang sama
+                                                  ],
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: const Text('Tutup'),
+                                        ),
+                                        ElevatedButton.icon(
+                                          onPressed: () {
+                                            // Fungsi print akan ditambahkan nanti
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    'Fitur print akan segera tersedia'),
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(Icons.print),
+                                          label: const Text('Print'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.print),
+                              label: const Text('Print Kartu'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF9c8aa5),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(width: 16),
