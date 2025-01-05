@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbwC1Du6U5tgSFcXHgHp0uGDJiGrWUfKj4vdUtRwp9rgubhUTw3z_Ey9307B_i3Hl6Cw/exec';
+      'https://script.google.com/macros/s/AKfycbyoMUoVtkDVMXZ2rMug-iREQvVP9WDafp_JPoCxyIY4zI9p4afBNf9kvCFibewy-PUm/exec';
 
   Future<List<Siswa>> getSiswaData() async {
     try {
@@ -154,6 +154,48 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Error deleting data: $e');
+    }
+  }
+
+  Future<bool> updateData({
+    required String type,
+    required String id,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'mode': 'update',
+          'type': type,
+          'id': id,
+          'data': data,
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+
+      // Jika dapat 302, ambil URL redirect dari header 'location'
+      if (response.statusCode == 302) {
+        final String? redirectUrl = response.headers['location'];
+        if (redirectUrl != null) {
+          final redirectResponse = await http.get(Uri.parse(redirectUrl));
+          final Map<String, dynamic> jsonResponse =
+              json.decode(redirectResponse.body);
+          return jsonResponse['status'] == 'success';
+        }
+      }
+      // Jika 200, langsung proses responsenya
+      else if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse['status'] == 'success';
+      }
+
+      return false;
+    } catch (e) {
+      print('Error updating data: $e');
+      throw Exception('Error updating data: $e');
     }
   }
 }

@@ -1,26 +1,27 @@
-// siswa_model.dart
+import 'package:intl/intl.dart';
+
 class Siswa {
   final String timestamp;
   final String kodeSiswa;
-  final String namaLengkap;
-  final DateTime tanggalLahir;
-  final String jenisKelamin;
-  final String alamat;
-  final String pilihanKelas;
-  final String noHpEmail;
-  final String namaOrangTua;
-  final String noHpOrangTua;
-  final String asalSekolahReguler;
-  final String kelasReguler;
-  final String mataPelajaranPilihan;
-  final String asalSekolahLolos;
-  final String kelasLoslosSekolah;
-  final String pilihanSekolah;
-  final String kelasLolosPT;
-  final String jurusanSMA;
-  final String mataPelajaranPilihanSMA;
-  final String pilihanJurusanPT;
-  final String statusPembayaran;
+  String namaLengkap; // Mutable untuk update
+  DateTime tanggalLahir; // Mutable untuk update
+  String jenisKelamin; // Mutable untuk update
+  String alamat; // Mutable untuk update
+  String pilihanKelas; // Mutable untuk update
+  String noHpEmail; // Mutable untuk update
+  String namaOrangTua; // Mutable untuk update
+  String noHpOrangTua; // Mutable untuk update
+  String asalSekolahReguler; // Mutable untuk update
+  String kelasReguler; // Mutable untuk update
+  String mataPelajaranPilihan; // Mutable untuk update
+  String asalSekolahLolos; // Mutable untuk update
+  String kelasLoslosSekolah; // Mutable untuk update
+  String pilihanSekolah; // Mutable untuk update
+  String kelasLolosPT; // Mutable untuk update
+  String jurusanSMA; // Mutable untuk update
+  String mataPelajaranPilihanSMA; // Mutable untuk update
+  String pilihanJurusanPT; // Mutable untuk update
+  String statusPembayaran; // Mutable untuk update
   final Map<String, dynamic>? qrCode;
 
   Siswa({
@@ -49,13 +50,35 @@ class Siswa {
   });
 
   factory Siswa.fromJson(Map<String, dynamic> json) {
+    DateTime parseTanggalLahir(dynamic value) {
+      if (value == null) return DateTime.now();
+
+      try {
+        // Coba parse jika format ISO
+        return DateTime.parse(value.toString());
+      } catch (e) {
+        try {
+          // Coba parse jika format dd/MM/yyyy
+          final parts = value.toString().split('/');
+          if (parts.length == 3) {
+            return DateTime(
+              int.parse(parts[2]), // year
+              int.parse(parts[1]), // month
+              int.parse(parts[0]), // day
+            );
+          }
+        } catch (e) {
+          print('Error parsing date: $value');
+        }
+        return DateTime.now();
+      }
+    }
+
     return Siswa(
       timestamp: json['Timestamp']?.toString() ?? '',
       kodeSiswa: json['Kode Siswa']?.toString() ?? '',
       namaLengkap: json['Nama Lengkap']?.toString() ?? '',
-      tanggalLahir: json['Tanggal Lahir'] != null
-          ? DateTime.parse(json['Tanggal Lahir'].toString())
-          : DateTime.now(),
+      tanggalLahir: parseTanggalLahir(json['Tanggal Lahir']),
       jenisKelamin: json['Jenis Kelamin']?.toString() ?? '',
       alamat: json['Alamat']?.toString() ?? '',
       pilihanKelas: json['Pilihan Kelas']?.toString() ?? '',
@@ -85,7 +108,8 @@ class Siswa {
       'Timestamp': timestamp,
       'Kode Siswa': kodeSiswa,
       'Nama Lengkap': namaLengkap,
-      'Tanggal Lahir': tanggalLahir.toIso8601String(),
+      'Tanggal Lahir': DateFormat('dd/MM/yyyy')
+          .format(tanggalLahir), // Format sesuai spreadsheet
       'Jenis Kelamin': jenisKelamin,
       'Alamat': alamat,
       'Pilihan Kelas': pilihanKelas,

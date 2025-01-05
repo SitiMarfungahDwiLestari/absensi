@@ -45,8 +45,8 @@ class _DetailSiswaState extends State<DetailSiswa> {
   Widget _buildQRCode() {
     if (siswa == null) return const SizedBox();
 
-    String qrData =
-        "${siswa!.kodeSiswa}|${siswa!.namaLengkap}|${siswa!.pilihanKelas}";
+    // QR hanya berisi kode
+    String qrData = siswa!.kodeSiswa; // atau guru!.kodeGuru untuk guru
 
     return Container(
       width: 150,
@@ -191,14 +191,331 @@ class _DetailSiswaState extends State<DetailSiswa> {
                                   ),
                                 ],
                               ),
-                              updateContent: const Text(
-                                  "Form update akan ditambahkan di sini"),
+                              updateContent: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.kodeSiswa),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Kode Siswa',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        enabled:
+                                            false, // Field tidak bisa diedit
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.namaLengkap),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Nama Lengkap',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.namaLengkap = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                          text: siswa?.tanggalLahir != null
+                                              ? DateFormat('dd/MM/yyyy')
+                                                  .format(siswa!.tanggalLahir)
+                                              : '',
+                                        ),
+                                        decoration: const InputDecoration(
+                                          labelText:
+                                              'Tanggal Lahir (DD/MM/YYYY)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) {
+                                          try {
+                                            final date =
+                                                DateFormat('dd/MM/yyyy')
+                                                    .parse(value);
+                                            siswa?.tanggalLahir = date;
+                                          } catch (e) {
+                                            // Handle invalid date format
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.jenisKelamin),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Jenis Kelamin',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.jenisKelamin = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.alamat),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Alamat',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        maxLines: 2,
+                                        onChanged: (value) =>
+                                            siswa?.alamat = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.pilihanKelas),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Pilihan Kelas',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.pilihanKelas = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.noHpEmail),
+                                        decoration: const InputDecoration(
+                                          labelText: 'No HP/Email',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.noHpEmail = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.namaOrangTua),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Nama Orang Tua',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.namaOrangTua = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.noHpOrangTua),
+                                        decoration: const InputDecoration(
+                                          labelText: 'No HP Orang Tua',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.noHpOrangTua = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.asalSekolahReguler),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Asal Sekolah (Reguler)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.asalSekolahReguler = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.kelasReguler),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Kelas (Reguler)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.kelasReguler = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.mataPelajaranPilihan),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Mata Pelajaran Pilihan',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.mataPelajaranPilihan = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.asalSekolahLolos),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Asal Sekolah (Lolos)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.asalSekolahLolos = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.kelasLoslosSekolah),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Kelas (Lolos Sekolah)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.kelasLoslosSekolah = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.pilihanSekolah),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Pilihan Sekolah',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.pilihanSekolah = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.kelasLolosPT),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Kelas (Lolos PT)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.kelasLolosPT = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.jurusanSMA),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Jurusan (SMA/SMK)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.jurusanSMA = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text:
+                                                siswa?.mataPelajaranPilihanSMA),
+                                        decoration: const InputDecoration(
+                                          labelText:
+                                              'Mata Pelajaran Pilihan (SMA)',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) => siswa
+                                            ?.mataPelajaranPilihanSMA = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.pilihanJurusanPT),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Pilihan Jurusan PT',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.pilihanJurusanPT = value,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextField(
+                                        controller: TextEditingController(
+                                            text: siswa?.statusPembayaran),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Status Pembayaran',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        onChanged: (value) =>
+                                            siswa?.statusPembayaran = value,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               deleteItemName: siswa?.namaLengkap ?? '',
                               onPrint: () {
                                 // Handle print
                               },
-                              onUpdate: () {
-                                // Handle update
+                              onUpdate: () async {
+                                try {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+
+                                  final success = await _apiService.updateData(
+                                    type: 'siswa',
+                                    id: siswa!.kodeSiswa,
+                                    data: {
+                                      'Pilihan Kelas': siswa!.pilihanKelas,
+                                      'Mata Pelajaran Pilihan':
+                                          siswa!.mataPelajaranPilihan,
+                                      'Asal Sekolah (Reguler)':
+                                          siswa!.asalSekolahReguler,
+                                      'Kelas (Reguler)': siswa!.kelasReguler,
+                                      'Asal Sekolah (lolos sekolah)':
+                                          siswa!.asalSekolahLolos,
+                                      'Kelas (lolos sekolah)':
+                                          siswa!.kelasLoslosSekolah,
+                                      'Pilihan Sekolah (3 Pilihan)':
+                                          siswa!.pilihanSekolah,
+                                      'Kelas (Lolos PT)': siswa!.kelasLolosPT,
+                                      'Jurusan (SMA/SMK)': siswa!.jurusanSMA,
+                                      'Mata Pelajaran Pilihan (SMA)':
+                                          siswa!.mataPelajaranPilihanSMA,
+                                      'Pilihan Jurusan Perguruan Tinggi (3 Pilihan)':
+                                          siswa!.pilihanJurusanPT,
+                                      'Status Pembayaran':
+                                          siswa!.statusPembayaran,
+                                      'Nama Lengkap': siswa!.namaLengkap,
+                                      'Alamat': siswa!.alamat,
+                                      'No Hp / Email': siswa!.noHpEmail,
+                                      'Nama Orang Tua': siswa!.namaOrangTua,
+                                      'No HP Orang Tua': siswa!.noHpOrangTua,
+                                      'Tanggal Lahir': DateFormat('dd/MM/yyyy')
+                                          .format(siswa!.tanggalLahir),
+                                      'Jenis Kelamin': siswa!.jenisKelamin,
+                                    },
+                                  );
+
+                                  // Tutup dialog loading
+                                  Navigator.of(context).pop();
+
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Data berhasil diupdate'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+
+                                    await _loadSiswaData();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Gagal mengupdate data'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  Navigator.of(context).pop();
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
                               onDelete: () async {
                                 try {

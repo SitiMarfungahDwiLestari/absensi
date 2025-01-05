@@ -102,10 +102,6 @@ class ActionButtons extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).pop();
               if (onUpdate != null) onUpdate!();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Fitur update akan segera tersedia')),
-              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF9c8aa5),

@@ -27,6 +27,65 @@ class _DetailGuruState extends State<DetailGuru> {
     _loadGuruData();
   }
 
+  // Di class _DetailGuruState
+  Future<void> _handleUpdate() async {
+    try {
+      // Tampilkan loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Lakukan update
+      final success = await _apiService.updateData(
+        type: 'guru',
+        id: guru!.kodeGuru,
+        data: {
+          'Nama Lengkap': guru!.namaLengkap,
+          'Jenis Kelamin': guru!.jenisKelamin,
+          'Tanggal Lahir': DateFormat('dd/MM/yyyy').format(guru!.tanggalLahir),
+          'Alamat': guru!.alamat,
+          'No HP': guru!.noHp,
+          'Status Aktivasi': guru!.statusAktivasi,
+        },
+      );
+
+      // Tutup loading
+      Navigator.of(context).pop();
+
+      if (success) {
+        // Tampilkan pesan sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Data berhasil diupdate'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Refresh data
+        await _loadGuruData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal mengupdate data'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Tutup loading jika ada
+      Navigator.of(context).pop();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> _loadGuruData() async {
     try {
       final loadedGuru = await _apiService.getGuruByKode(widget.kodeGuru);
@@ -45,7 +104,8 @@ class _DetailGuruState extends State<DetailGuru> {
   Widget _buildQRCode() {
     if (guru == null) return const SizedBox();
 
-    String qrData = "${guru!.kodeGuru}|${guru!.namaLengkap}|${guru!.noHp}";
+    // QR hanya berisi kode
+    String qrData = guru!.kodeGuru; // atau guru!.kodeGuru untuk guru
 
     return Container(
       width: 150,
@@ -187,14 +247,153 @@ class _DetailGuruState extends State<DetailGuru> {
                                   ),
                                 ],
                               ),
-                              updateContent: const Text(
-                                  "Form update akan ditambahkan di sini"),
+                              updateContent: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: TextEditingController(
+                                          text: guru?.namaLengkap),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Nama Lengkap',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) =>
+                                          guru?.namaLengkap = value,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: TextEditingController(
+                                          text: guru?.jenisKelamin),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Jenis Kelamin',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) =>
+                                          guru?.jenisKelamin = value,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: TextEditingController(
+                                        text: guru?.tanggalLahir != null
+                                            ? DateFormat('dd/MM/yyyy')
+                                                .format(guru!.tanggalLahir)
+                                            : '',
+                                      ),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Tanggal Lahir (DD/MM/YYYY)',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) {
+                                        try {
+                                          final date = DateFormat('dd/MM/yyyy')
+                                              .parse(value);
+                                          guru?.tanggalLahir = date;
+                                        } catch (e) {
+                                          // Handle invalid date format
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: TextEditingController(
+                                          text: guru?.alamat),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Alamat',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      maxLines: 2,
+                                      onChanged: (value) =>
+                                          guru?.alamat = value,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: TextEditingController(
+                                          text: guru?.noHp),
+                                      decoration: const InputDecoration(
+                                        labelText: 'No HP',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) => guru?.noHp = value,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: TextEditingController(
+                                          text: guru?.statusAktivasi),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Status Aktivasi',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) =>
+                                          guru?.statusAktivasi = value,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               deleteItemName: guru?.namaLengkap ?? '',
                               onPrint: () {
                                 // Handle print
                               },
-                              onUpdate: () {
-                                // Handle update
+                              onUpdate: () async {
+                                try {
+                                  // Tampilkan loading
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+
+                                  // Lakukan update
+                                  final success = await _apiService.updateData(
+                                    type: 'guru',
+                                    id: guru!.kodeGuru,
+                                    data: {
+                                      'Nama Lengkap': guru!.namaLengkap,
+                                      'Jenis Kelamin': guru!.jenisKelamin,
+                                      'Tanggal Lahir': DateFormat('dd/MM/yyyy')
+                                          .format(guru!.tanggalLahir),
+                                      'Alamat': guru!.alamat,
+                                      'No HP': guru!.noHp,
+                                      'Status Aktivasi': guru!.statusAktivasi,
+                                    },
+                                  );
+
+                                  // Tutup loading
+                                  Navigator.of(context).pop();
+
+                                  if (success) {
+                                    // Tampilkan pesan sukses
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Data berhasil diupdate'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+
+                                    // Refresh data
+                                    await _loadGuruData();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Gagal mengupdate data'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  // Tutup loading jika ada
+                                  Navigator.of(context).pop();
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
                               onDelete: () async {
                                 try {
