@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:absensi/api_service.dart';
-import 'package:absensi/models/siswa.dart';
-import 'package:absensi/screens/Siswa/detail_siswa.dart';
+import 'package:absensi/models/presensi.dart';
 import 'package:absensi/screens/widget/SideMenu_Navigation.dart' as custom;
 
-class DaftarSiswa extends StatefulWidget {
-  const DaftarSiswa({super.key});
+class RekapPresensi extends StatefulWidget {
+  const RekapPresensi({super.key});
 
   @override
-  State<DaftarSiswa> createState() => _DaftarSiswaState();
+  State<RekapPresensi> createState() => _RekapPresensiState();
 }
 
-class _DaftarSiswaState extends State<DaftarSiswa> {
-  Stream<List<Siswa>> getSiswaStream() async* {
+class _RekapPresensiState extends State<RekapPresensi> {
+  Stream<List<Presensi>> getPresensiStream() async* {
     while (true) {
       try {
-        List<Siswa> data = await ApiService().getSiswaData();
+        List<Presensi> data = await ApiService().getPresensiData();
         yield data;
         await Future.delayed(Duration(seconds: 5));
       } catch (e) {
@@ -33,7 +32,7 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
     return Scaffold(
       body: Row(
         children: [
-          custom.SideMenuNavigation(currentPage: 'daftar_siswa'),
+          custom.SideMenuNavigation(currentPage: 'rekap_presensi'),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -59,7 +58,7 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Daftar Siswa',
+                          'Rekap Presensi',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: isMobile ? 24 : 32,
@@ -77,8 +76,8 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        StreamBuilder<List<Siswa>>(
-                          stream: getSiswaStream(),
+                        StreamBuilder<List<Presensi>>(
+                          stream: getPresensiStream(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -87,9 +86,9 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                               return Text('Error: ${snapshot.error}');
                             } else if (!snapshot.hasData ||
                                 snapshot.data!.isEmpty) {
-                              return Text('Tidak ada data siswa');
+                              return Text('Tidak ada data presensi');
                             } else {
-                              var siswaList = snapshot.data!;
+                              var presensiList = snapshot.data!;
 
                               return SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
@@ -97,31 +96,29 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
                                   showCheckboxColumn: false,
                                   columns: const [
                                     DataColumn(label: Text('No')),
-                                    DataColumn(label: Text('Kode Siswa')),
+                                    DataColumn(label: Text('Timestamp')),
+                                    DataColumn(label: Text('Kode Presensi')),
+                                    DataColumn(label: Text('Kode Guru/Siswa')),
                                     DataColumn(label: Text('Nama')),
-                                    DataColumn(label: Text('Kelas')),
+                                    DataColumn(label: Text('Kehadiran')),
                                     DataColumn(
                                         label: Text('Status Pembayaran')),
                                   ],
-                                  rows: siswaList.asMap().entries.map((entry) {
+                                  rows:
+                                      presensiList.asMap().entries.map((entry) {
                                     final index = entry.key + 1;
-                                    final siswa = entry.value;
+                                    final presensi = entry.value;
 
                                     return DataRow(
-                                      onSelectChanged: (_) {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => DetailSiswa(siswa: siswa),
-                                        //   ),
-                                        // );
-                                      },
                                       cells: [
                                         DataCell(Text(index.toString())),
-                                        DataCell(Text(siswa.kodeSiswa)),
-                                        DataCell(Text(siswa.namaLengkap)),
-                                        DataCell(Text(siswa.pilihanKelas)),
-                                        DataCell(Text(siswa.statusPembayaran)),
+                                        DataCell(Text(presensi.timestamp)),
+                                        DataCell(Text(presensi.kodePresensi)),
+                                        DataCell(Text(presensi.kodeGuruSiswa)),
+                                        DataCell(Text(presensi.nama)),
+                                        DataCell(Text(presensi.kehadiran)),
+                                        DataCell(
+                                            Text(presensi.statusPembayaran)),
                                       ],
                                       color: MaterialStateProperty.resolveWith<
                                           Color?>(

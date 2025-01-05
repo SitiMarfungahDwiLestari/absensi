@@ -1,9 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:absensi/api_service.dart';
 import 'package:absensi/models/guru.dart';
 import 'package:absensi/screens/Guru/detail_guru.dart';
-import 'package:absensi/screens/widget/silver_appbar.dart';
-import 'package:flutter/material.dart';
-import 'package:absensi/screens/widget/navigation_drawer.dart' as custom;
+import 'package:absensi/screens/widget/SideMenu_Navigation.dart' as custom;
 
 class DaftarGuru extends StatefulWidget {
   const DaftarGuru({super.key});
@@ -13,31 +12,66 @@ class DaftarGuru extends StatefulWidget {
 }
 
 class _DaftarGuruState extends State<DaftarGuru> {
-  final ApiService _apiService = ApiService();
-
   Stream<List<Guru>> getGuruStream() async* {
     while (true) {
-      List<Guru> data = await _apiService.getGuruData();
-      yield data;
-      await Future.delayed(Duration(seconds: 5));
+      try {
+        List<Guru> data = await ApiService().getGuruData();
+        yield data;
+        await Future.delayed(Duration(seconds: 5));
+      } catch (e) {
+        print('Error in stream: $e');
+        yield [];
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Scaffold(
       body: Row(
         children: [
-          custom.NavigationDrawer(),
+          custom.SideMenuNavigation(currentPage: 'daftar_guru'),
           Expanded(
             child: CustomScrollView(
               slivers: [
-                CustomSliverAppBar(
-                  title: 'Data Guru',
-                  onAddPressed: () {
-                    print('Tambah guru!');
-                  },
+                // Header
+                SliverToBoxAdapter(
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      vertical: isMobile ? 20 : 30,
+                      horizontal: 16,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFbdaec6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Daftar Guru',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: isMobile ? 24 : 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+                // Data Table
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -63,9 +97,10 @@ class _DaftarGuruState extends State<DaftarGuru> {
                                   showCheckboxColumn: false,
                                   columns: const [
                                     DataColumn(label: Text('No')),
+                                    DataColumn(label: Text('Kode Guru')),
                                     DataColumn(label: Text('Nama')),
-                                    DataColumn(label: Text('Alamat')),
                                     DataColumn(label: Text('No HP')),
+                                    DataColumn(label: Text('Status Aktivasi')),
                                   ],
                                   rows: guruList.asMap().entries.map((entry) {
                                     final index = entry.key + 1;
@@ -73,19 +108,19 @@ class _DaftarGuruState extends State<DaftarGuru> {
 
                                     return DataRow(
                                       onSelectChanged: (_) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DetailGuru(guru: guru),
-                                          ),
-                                        );
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) => DetailGuru(guru: guru),
+                                        //   ),
+                                        // );
                                       },
                                       cells: [
                                         DataCell(Text(index.toString())),
+                                        DataCell(Text(guru.kodeGuru)),
                                         DataCell(Text(guru.namaLengkap)),
-                                        DataCell(Text(guru.alamat)),
                                         DataCell(Text(guru.noHp)),
+                                        DataCell(Text(guru.statusAktivasi)),
                                       ],
                                       color: MaterialStateProperty.resolveWith<
                                           Color?>(

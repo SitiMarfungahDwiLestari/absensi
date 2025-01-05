@@ -1,248 +1,131 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:absensi/models/guru.dart';
+import 'package:absensi/models/presensi.dart';
+import 'package:absensi/models/siswa.dart';
 import 'package:http/http.dart' as http;
-import 'package:absensi/models/absensi.dart';
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbwaZjJ0kRqvrq7D7zk073c6P7yNNS1yQ0-K9zyJ0yoMb56xkmS7vgMqOs1vmcjLo4Ga/exec';
+      'https://script.google.com/macros/s/AKfycbzFHAZC0gLyWp_OafTRj8QYTy1Vgaoi2qjrKXLN31EQ70sT9wVOdQt_W04uZ6oxI-Qu/exec';
 
-  // Fungsi untuk mendapatkan data absensi
-  Future<List<Absensi>> getAbsensiData(String user) async {
+  Future<List<Siswa>> getSiswaData() async {
     try {
       final response = await http.get(
-        Uri.parse('$apiUrl?route=getAbsensi&sheet=Reguler&User=$user'),
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'FlutterApp',
-        },
+        Uri.parse('$apiUrl?endpoint=siswa'),
       );
 
       if (response.statusCode == 200) {
-        dynamic bodyDekode = json.decode(response.body);
+        // Decode JSON response
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> siswaJsonList = jsonResponse['data'];
 
-        if (bodyDekode['status'] == 'success' && bodyDekode['data'] is List) {
-          return bodyDekode['data']
-              .map<Absensi>((x) => Absensi.fromJson(x))
-              .toList();
-        } else {
-          throw Exception(
-              'Format data tidak sesuai atau status tidak berhasil');
-        }
+        // Convert each JSON object to Siswa object
+        return siswaJsonList.map((json) => Siswa.fromJson(json)).toList();
       } else {
-        throw Exception('Gagal memuat data: ${response.statusCode}');
+        throw Exception('Failed to load siswa data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Kesalahan mengambil data: $e');
-      throw Exception('Kesalahan mengambil data: $e');
+      throw Exception('Error getting siswa data: $e');
     }
   }
 
   Future<List<Guru>> getGuruData() async {
     try {
-      // Ubah URL untuk mengambil data dari sheet guru
       final response = await http.get(
-        Uri.parse('$apiUrl?sheet=guru'), // Pastikan parameter sheet=guru
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        Uri.parse('$apiUrl?endpoint=guru'),
       );
-
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['status'] == 'success' &&
-            responseData['data'] is List) {
-          return responseData['data']
-              .map<Guru>((x) => Guru.fromJson(x))
-              .toList();
-        }
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> guruJsonList = jsonResponse['data'];
+        return guruJsonList.map((json) => Guru.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load guru data: ${response.statusCode}');
       }
-
-      return [];
     } catch (e) {
-      print('Error getting guru data: $e');
-      return [];
+      throw Exception('Error getting guru data: $e');
     }
   }
 
-  Future<bool> updateGuru(Map<String, String> updatedData) async {
+  Future<List<Presensi>> getPresensiData() async {
     try {
-      final Map<String, String> requestData = {
-        'mode': 'editGuru',
-        'namaLengkap': updatedData['Nama Lengkap'] ?? '',
-        'alamat': updatedData['Alamat'] ?? '',
-        'noHp': updatedData['No HP'] ?? '',
-      };
-
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode(requestData),
+      final response = await http.get(
+        Uri.parse('$apiUrl?endpoint=presensi'),
       );
 
-      if (response.statusCode == 302 &&
-          response.headers.containsKey('location')) {
-        final redirectResponse =
-            await http.get(Uri.parse(response.headers['location']!));
-        if (redirectResponse.statusCode == 200) {
-          final responseData = json.decode(redirectResponse.body);
-          return responseData['status'] == 'success';
-        }
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> presensiJsonList = jsonResponse['data'];
+        return presensiJsonList.map((json) => Presensi.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load presensi data: ${response.statusCode}');
       }
-      return false;
     } catch (e) {
-      print('Error updating guru: $e');
-      return false;
+      throw Exception('Error getting presensi data: $e');
     }
   }
 
-  //delete Guru
-  Future<bool> deleteGuru(String namaLengkap) async {
+  // Method untuk mengambil data presensi hari ini
+  Future<List<Presensi>> getPresensiHariIni() async {
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode({
-          'mode': 'deleteGuru',
-          'namaLengkap': namaLengkap,
-        }),
+      final response = await http.get(
+        Uri.parse('$apiUrl?endpoint=presensi'),
       );
 
-      print('Delete response status: ${response.statusCode}');
-      print('Delete response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> presensiJsonList = jsonResponse['data'];
 
-      if (response.statusCode == 302 &&
-          response.headers.containsKey('location')) {
-        final redirectResponse =
-            await http.get(Uri.parse(response.headers['location']!));
-        print('Delete redirect response: ${redirectResponse.body}');
+        // Mendapatkan tanggal hari ini (tanpa waktu)
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
 
-        if (redirectResponse.statusCode == 200) {
-          final responseData = json.decode(redirectResponse.body);
-          return responseData['status'] == 'success';
-        }
-      }
-
-      return false;
-    } catch (e) {
-      print('Error deleting guru: $e');
-      return false;
-    }
-  }
-
-  // Fungsi untuk update data absensi
-  Future<bool> updateAbsensi(Map<String, String> updatedData) async {
-    try {
-      // Persiapkan data yang akan dikirim sesuai format yang berhasil di Postman
-      final Map<String, String> requestData = {
-        'mode': 'edit',
-        'namaLengkap': updatedData['Nama Lengkap'] ?? '',
-      };
-
-      // Mapping nama field sesuai dengan Google Sheet
-      final Map<String, String> fieldMapping = {
-        'Tempat/Tanggal Lahir': 'Tempat/Tanggal Lahir',
-        'Jenis Kelamin': 'Jenis Kelamin',
-        'Alamat': 'Alamat',
-        'No HP': 'No HP',
-        'Status Pembayaran': 'Status Pembayaran'
-      };
-
-      // Tambahkan field yang ada nilainya
-      fieldMapping.forEach((flutterField, sheetField) {
-        if (updatedData.containsKey(flutterField) &&
-            updatedData[flutterField] != null &&
-            updatedData[flutterField]!.isNotEmpty) {
-          requestData[sheetField] = updatedData[flutterField]!;
-        }
-      });
-
-      print('Sending data: ${json.encode(requestData)}');
-
-      // Kirim request
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode(requestData),
-      );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      // Handle redirect
-      if (response.statusCode == 302) {
-        final String? redirectUrl = response.headers['location'];
-        if (redirectUrl != null) {
-          final redirectResponse = await http.get(Uri.parse(redirectUrl));
-
-          print('Redirect response status: ${redirectResponse.statusCode}');
-          print('Redirect response body: ${redirectResponse.body}');
-
-          if (redirectResponse.statusCode == 200) {
-            final responseData = json.decode(redirectResponse.body);
-            if (responseData['status'] == 'warning') {
-              print('Warning: ${responseData['message']}');
-              return false;
-            }
-            return responseData['status'] == 'success';
+        // Filter data presensi untuk hari ini saja
+        return presensiJsonList
+            .map((json) => Presensi.fromJson(json))
+            .where((presensi) {
+          try {
+            final presensiDate = DateTime.parse(presensi.timestamp).toLocal();
+            final presensiDay = DateTime(
+                presensiDate.year, presensiDate.month, presensiDate.day);
+            return presensiDay.isAtSameMomentAs(today);
+          } catch (e) {
+            print('Error parsing date: ${presensi.timestamp}');
+            return false;
           }
-        }
+        }).toList();
+      } else {
+        throw Exception('Failed to load presensi data: ${response.statusCode}');
       }
-
-      return false;
     } catch (e) {
-      print('Error during update: $e');
-      throw Exception('Gagal mengupdate data: $e');
+      throw Exception('Error getting presensi data: $e');
     }
   }
 
-  Future<bool> deleteAbsensi(String namaLengkap) async {
+  // Method untuk mencari siswa berdasarkan kode
+  Future<Siswa?> getSiswaByKode(String kodeSiswa) async {
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode({
-          'mode': 'delete',
-          'namaLengkap': namaLengkap,
-        }),
+      final siswaList = await getSiswaData();
+      return siswaList.firstWhere(
+        (siswa) => siswa.kodeSiswa == kodeSiswa,
+        orElse: () => throw Exception('Siswa tidak ditemukan'),
       );
-
-      print('Delete response status: ${response.statusCode}');
-      print('Delete response body: ${response.body}');
-
-      if (response.statusCode == 302 &&
-          response.headers.containsKey('location')) {
-        final redirectResponse =
-            await http.get(Uri.parse(response.headers['location']!));
-        print('Delete redirect status: ${redirectResponse.statusCode}');
-        print('Delete redirect body: ${redirectResponse.body}');
-
-        if (redirectResponse.statusCode == 200) {
-          final responseData = json.decode(redirectResponse.body);
-          return responseData['status'] == 'success';
-        }
-      }
-
-      return false;
     } catch (e) {
-      print('Error during delete: $e');
-      return false;
+      throw Exception('Error finding siswa: $e');
+    }
+  }
+
+  // Method untuk mencari guru berdasarkan kode
+  Future<Guru?> getGuruByKode(String kodeGuru) async {
+    try {
+      final guruList = await getGuruData();
+      return guruList.firstWhere(
+        (guru) => guru.kodeGuru == kodeGuru,
+        orElse: () => throw Exception('Guru tidak ditemukan'),
+      );
+    } catch (e) {
+      throw Exception('Error finding guru: $e');
     }
   }
 }
