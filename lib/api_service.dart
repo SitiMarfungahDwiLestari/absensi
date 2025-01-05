@@ -128,4 +128,32 @@ class ApiService {
       throw Exception('Error finding guru: $e');
     }
   }
+
+  Future<bool> deleteData({
+    required String type, // 'guru' atau 'siswa'
+    required String id, // kodeGuru atau kodeSiswa
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode({
+          'mode': 'delete',
+          'type': type,
+          'id': id,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse['status'] == 'success';
+      } else if (response.statusCode == 302) {
+        // Data berhasil dihapus meskipun server mengembalikan status 302
+        return true;
+      } else {
+        throw Exception('Failed to delete data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error deleting data: $e');
+    }
+  }
 }

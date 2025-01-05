@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:absensi/api_service.dart';
 import 'package:absensi/models/presensi.dart';
 import 'package:absensi/screens/widget/SideMenu_Navigation.dart' as custom;
+import 'package:intl/intl.dart';
 
 class RekapPresensi extends StatefulWidget {
   const RekapPresensi({super.key});
@@ -22,6 +23,18 @@ class _RekapPresensiState extends State<RekapPresensi> {
         yield [];
       }
     }
+  }
+
+  String formatDate(String timestamp) {
+    final dateTime = DateTime.parse(timestamp);
+    final formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(dateTime);
+  }
+
+  String formatTime(String timestamp) {
+    final dateTime = DateTime.parse(timestamp);
+    final formatter = DateFormat('HH:mm:ss');
+    return formatter.format(dateTime);
   }
 
   @override
@@ -95,14 +108,15 @@ class _RekapPresensiState extends State<RekapPresensi> {
                                 child: DataTable(
                                   showCheckboxColumn: false,
                                   columns: const [
-                                    DataColumn(label: Text('No')),
-                                    DataColumn(label: Text('Timestamp')),
+                                    DataColumn(label: Text('Tanggal')),
+                                    DataColumn(label: Text('Waktu')),
                                     DataColumn(label: Text('Kode Presensi')),
-                                    DataColumn(label: Text('Kode Guru/Siswa')),
+                                    DataColumn(label: Text('Kode')),
                                     DataColumn(label: Text('Nama')),
                                     DataColumn(label: Text('Kehadiran')),
                                     DataColumn(
                                         label: Text('Status Pembayaran')),
+                                    DataColumn(label: Text('Aksi')),
                                   ],
                                   rows:
                                       presensiList.asMap().entries.map((entry) {
@@ -111,14 +125,78 @@ class _RekapPresensiState extends State<RekapPresensi> {
 
                                     return DataRow(
                                       cells: [
-                                        DataCell(Text(index.toString())),
-                                        DataCell(Text(presensi.timestamp)),
+                                        DataCell(Text(
+                                            formatDate(presensi.timestamp))),
+                                        DataCell(Text(
+                                            formatTime(presensi.timestamp))),
                                         DataCell(Text(presensi.kodePresensi)),
                                         DataCell(Text(presensi.kodeGuruSiswa)),
                                         DataCell(Text(presensi.nama)),
                                         DataCell(Text(presensi.kehadiran)),
                                         DataCell(
                                             Text(presensi.statusPembayaran)),
+                                        DataCell(
+                                          Row(
+                                            children: [
+                                              TextButton(
+                                                onPressed: () {},
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor: Colors
+                                                      .blue, // Atur warna latar belakang tombol edit
+                                                ),
+                                                child: Text(
+                                                  'Edit',
+                                                  style: TextStyle(
+                                                    color: Colors
+                                                        .white, // Atur warna teks tombol edit
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              TextButton(
+                                                onPressed: () {
+                                                  // Aksi saat tombol delete ditekan
+                                                  // Misalnya, tampilkan dialog konfirmasi sebelum menghapus
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        AlertDialog(
+                                                      title: const Text(
+                                                          'Konfirmasi'),
+                                                      content: const Text(
+                                                          'Apakah Anda yakin ingin menghapus presensi ini?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          child: const Text(
+                                                              'Batal'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {},
+                                                          child: const Text(
+                                                              'Hapus'),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor: Colors
+                                                      .red, // Atur warna latar belakang tombol hapus
+                                                ),
+                                                child: Text(
+                                                  'Hapus',
+                                                  style: TextStyle(
+                                                    color: Colors
+                                                        .white, // Atur warna teks tombol hapus
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                       color: MaterialStateProperty.resolveWith<
                                           Color?>(

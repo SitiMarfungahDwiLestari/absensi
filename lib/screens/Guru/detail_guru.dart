@@ -4,6 +4,7 @@ import 'package:absensi/api_service.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:absensi/screens/widget/SideMenu_Navigation.dart' as custom;
+import 'package:absensi/screens/widget/action_buttons.dart';
 
 class DetailGuru extends StatefulWidget {
   final String kodeGuru;
@@ -80,7 +81,6 @@ class _DetailGuruState extends State<DetailGuru> {
 
   Widget _buildInfoSection(
       String title, List<MapEntry<String, String>> details) {
-    // Filter out null or empty values
     final validDetails = details.where((entry) {
       if (entry.value == null) return false;
       if (entry.value.trim().isEmpty) return false;
@@ -88,7 +88,6 @@ class _DetailGuruState extends State<DetailGuru> {
       return true;
     }).toList();
 
-    // If no valid details, don't show the section
     if (validDetails.isEmpty) return const SizedBox();
 
     return Column(
@@ -158,83 +157,103 @@ class _DetailGuruState extends State<DetailGuru> {
                             const SizedBox(height: 16),
                             _buildQRCode(),
                             const SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Print Kartu Presensi'),
-                                      content: SingleChildScrollView(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.grey),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  if (guru != null) ...[
-                                                    Text(
-                                                      guru!.namaLengkap,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                        'Kode: ${guru!.kodeGuru}'),
-                                                    const SizedBox(height: 8),
-                                                    _buildQRCode(), // Menampilkan QR Code yang sama
-                                                  ],
-                                                ],
-                                              ),
+                            ActionButtons(
+                              printContent: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        if (guru != null) ...[
+                                          Text(
+                                            guru!.namaLengkap,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                          child: const Text('Tutup'),
-                                        ),
-                                        ElevatedButton.icon(
-                                          onPressed: () {
-                                            // Fungsi print akan ditambahkan nanti
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Fitur print akan segera tersedia'),
-                                              ),
-                                            );
-                                          },
-                                          icon: const Icon(Icons.print),
-                                          label: const Text('Print'),
-                                        ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text('Kode: ${guru!.kodeGuru}'),
+                                          const SizedBox(height: 8),
+                                          _buildQRCode(),
+                                        ],
                                       ],
-                                    );
-                                  },
-                                );
-                              },
-                              icon: const Icon(Icons.print),
-                              label: const Text('Print Kartu'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF9c8aa5),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
+                                    ),
+                                  ),
+                                ],
                               ),
+                              updateContent: const Text(
+                                  "Form update akan ditambahkan di sini"),
+                              deleteItemName: guru?.namaLengkap ?? '',
+                              onPrint: () {
+                                // Handle print
+                              },
+                              onUpdate: () {
+                                // Handle update
+                              },
+                              onDelete: () async {
+                                try {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+
+                                  final success = await _apiService.deleteData(
+                                    type:
+                                        'guru', // atau 'siswa', 'presensi' sesuai konteks
+                                    id: guru!
+                                        .kodeGuru, // atau siswa!.kodeSiswa, presensi!.kodePresensi
+                                  );
+
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Data berhasil dihapus'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+
+                                    // Tunggu selama 5 detik sebelum kembali ke halaman sebelumnya
+                                    await Future.delayed(
+                                        const Duration(seconds: 4));
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(
+                                        context); // Tutup dialog loading
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(
+                                        context); // Kembali ke halaman sebelumnya
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(
+                                        context); // Tutup dialog loading
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Gagal menghapus data'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(
+                                      context); // Tutup dialog loading
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -280,7 +299,6 @@ class _DetailGuruState extends State<DetailGuru> {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                // Header
                 SliverToBoxAdapter(
                   child: Container(
                     width: double.infinity,
@@ -314,7 +332,6 @@ class _DetailGuruState extends State<DetailGuru> {
                     ),
                   ),
                 ),
-                // Content
                 SliverToBoxAdapter(
                   child: mainContent,
                 ),

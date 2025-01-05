@@ -35,10 +35,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ApiService _apiService = ApiService();
+
   Stream<List<Presensi>> getPresensiHariIniStream() async* {
     while (true) {
       try {
-        List<Presensi> data = await ApiService().getPresensiHariIni();
+        List<Presensi> data = await _apiService.getPresensiHariIni();
         yield data;
         await Future.delayed(Duration(seconds: 5));
       } catch (e) {
@@ -51,6 +53,38 @@ class _HomeScreenState extends State<HomeScreen> {
   String formatTimestamp(String timestamp) {
     final dateTime = DateTime.parse(timestamp).toLocal();
     return DateFormat('HH:mm:ss').format(dateTime);
+  }
+
+  Future<void> deletePresensi(String kodePresensi) async {
+    try {
+      final success = await _apiService.deleteData(
+        type: 'presensi',
+        id: kodePresensi,
+      );
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Data presensi berhasil dihapus'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menghapus data presensi'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -153,6 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               DataColumn(label: Text('Nama')),
                               DataColumn(label: Text('Kehadiran')),
                               DataColumn(label: Text('Status')),
+                              DataColumn(label: Text('Aksi')),
                             ],
                             rows: presensiList.map((presensi) {
                               return DataRow(
@@ -163,6 +198,66 @@ class _HomeScreenState extends State<HomeScreen> {
                                   DataCell(Text(presensi.nama)),
                                   DataCell(Text(presensi.kehadiran)),
                                   DataCell(Text(presensi.statusPembayaran)),
+                                  DataCell(
+                                    Row(
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {},
+                                          style: TextButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.blueGrey[50]),
+                                          child: Text(
+                                            'Edit',
+                                            style: TextStyle(
+                                              color: Colors
+                                                  .black, // Atur warna teks tombol edit
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        TextButton(
+                                          onPressed: () {
+                                            // Aksi saat tombol delete ditekan
+                                            // Misalnya, tampilkan dialog konfirmasi sebelum menghapus
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('Konfirmasi'),
+                                                content: const Text(
+                                                    'Apakah Anda yakin ingin menghapus presensi ini?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    child: const Text('Batal'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      // Panggil fungsi untuk menghapus presensi
+                                                      deletePresensi(presensi
+                                                          .kodePresensi);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text('Hapus'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: Colors.red[400],
+                                          ),
+                                          child: Text(
+                                            'Hapus',
+                                            style: TextStyle(
+                                              color: Colors
+                                                  .white, // Atur warna teks tombol hapus
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               );
                             }).toList(),
