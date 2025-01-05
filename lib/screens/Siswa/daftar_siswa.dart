@@ -109,12 +109,13 @@ class _DaftarSiswaState extends State<DaftarSiswa> {
 
                                     return DataRow(
                                       onSelectChanged: (_) {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => DetailSiswa(siswa: siswa),
-                                        //   ),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => DetailSiswa(
+                                                kodeSiswa: siswa.kodeSiswa),
+                                          ),
+                                        );
                                       },
                                       cells: [
                                         DataCell(Text(index.toString())),

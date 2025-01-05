@@ -108,12 +108,13 @@ class _DaftarGuruState extends State<DaftarGuru> {
 
                                     return DataRow(
                                       onSelectChanged: (_) {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => DetailGuru(guru: guru),
-                                        //   ),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => DetailGuru(
+                                                kodeGuru: guru.kodeGuru),
+                                          ),
+                                        );
                                       },
                                       cells: [
                                         DataCell(Text(index.toString())),

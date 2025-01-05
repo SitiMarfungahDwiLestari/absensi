@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbzFHAZC0gLyWp_OafTRj8QYTy1Vgaoi2qjrKXLN31EQ70sT9wVOdQt_W04uZ6oxI-Qu/exec';
+      'https://script.google.com/macros/s/AKfycbwC1Du6U5tgSFcXHgHp0uGDJiGrWUfKj4vdUtRwp9rgubhUTw3z_Ey9307B_i3Hl6Cw/exec';
 
   Future<List<Siswa>> getSiswaData() async {
     try {
