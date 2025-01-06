@@ -1,3 +1,4 @@
+import 'package:absensi/services/print_service.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/models/siswa.dart';
 import 'package:absensi/api_service.dart';
@@ -522,8 +523,19 @@ class _DetailSiswaState extends State<DetailSiswa> {
                                 ),
                               ),
                               deleteItemName: siswa?.namaLengkap ?? '',
-                              onPrint: () {
-                                // Handle print
+                              onPrint: () async {
+                                if (siswa != null) {
+                                  await PrintService.printSiswaCard(
+                                      context, siswa!);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Data siswa tidak tersedia untuk dicetak'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
                               onUpdate: () async {
                                 try {
