@@ -70,8 +70,7 @@ class ActionButtons extends StatelessWidget {
               Navigator.of(context).pop();
               if (onPrint != null) onPrint!();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Fitur print akan segera tersedia')),
+                const SnackBar(content: Text('Mencetak...')),
               );
             },
             icon: const Icon(Icons.print),

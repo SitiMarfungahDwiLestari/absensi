@@ -1,3 +1,4 @@
+import 'package:absensi/services/print_service.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi/models/guru.dart';
 import 'package:absensi/api_service.dart';
@@ -357,8 +358,19 @@ class _DetailGuruState extends State<DetailGuru> {
                                 ),
                               ),
                               deleteItemName: guru?.namaLengkap ?? '',
-                              onPrint: () {
-                                // Handle print
+                              onPrint: () async {
+                                if (guru != null) {
+                                  await PrintService.printGuruCard(
+                                      context, guru!);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Data guru tidak tersedia untuk dicetak'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               },
                               onUpdate: () async {
                                 try {
