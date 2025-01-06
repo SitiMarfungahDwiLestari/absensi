@@ -264,15 +264,27 @@ class _DetailGuruState extends State<DetailGuru> {
                                           guru?.namaLengkap = value,
                                     ),
                                     const SizedBox(height: 16),
-                                    TextField(
-                                      controller: TextEditingController(
-                                          text: guru?.jenisKelamin),
+                                    DropdownButtonFormField<String>(
+                                      value: guru?.jenisKelamin,
                                       decoration: const InputDecoration(
                                         labelText: 'Jenis Kelamin',
                                         border: OutlineInputBorder(),
                                       ),
-                                      onChanged: (value) =>
-                                          guru?.jenisKelamin = value,
+                                      items: const [
+                                        DropdownMenuItem(
+                                          value: 'Laki-laki',
+                                          child: Text('Laki-laki'),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: 'Perempuan',
+                                          child: Text('Perempuan'),
+                                        ),
+                                      ],
+                                      onChanged: (value) {
+                                        if (value != null) {
+                                          guru?.jenisKelamin = value;
+                                        }
+                                      },
                                     ),
                                     const SizedBox(height: 16),
                                     TextField(
@@ -319,15 +331,27 @@ class _DetailGuruState extends State<DetailGuru> {
                                       onChanged: (value) => guru?.noHp = value,
                                     ),
                                     const SizedBox(height: 16),
-                                    TextField(
-                                      controller: TextEditingController(
-                                          text: guru?.statusAktivasi),
+                                    DropdownButtonFormField<String>(
+                                      value: guru?.statusAktivasi,
                                       decoration: const InputDecoration(
                                         labelText: 'Status Aktivasi',
                                         border: OutlineInputBorder(),
                                       ),
-                                      onChanged: (value) =>
-                                          guru?.statusAktivasi = value,
+                                      items: const [
+                                        DropdownMenuItem(
+                                          value: 'Aktif',
+                                          child: Text('Aktif'),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: 'Tidak Aktif',
+                                          child: Text('Tidak Aktif'),
+                                        ),
+                                      ],
+                                      onChanged: (value) {
+                                        if (value != null) {
+                                          guru?.statusAktivasi = value;
+                                        }
+                                      },
                                     ),
                                   ],
                                 ),
