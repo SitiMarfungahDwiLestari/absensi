@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String apiUrl =
-      'https://script.google.com/macros/s/AKfycbyoMUoVtkDVMXZ2rMug-iREQvVP9WDafp_JPoCxyIY4zI9p4afBNf9kvCFibewy-PUm/exec';
+      'https://script.google.com/macros/s/AKfycbygyIyKqwTavSIsQwlrt2fk0UkANH9i-aeg_8IGaGTk_LLNdFVciDhWo9zByNuqQpuU/exec';
 
   Future<List<Siswa>> getSiswaData() async {
     try {
@@ -102,8 +102,6 @@ class ApiService {
       throw Exception('Error getting presensi data: $e');
     }
   }
-
-  
 
   // Method untuk mencari siswa berdasarkan kode
   Future<Siswa?> getSiswaByKode(String kodeSiswa) async {

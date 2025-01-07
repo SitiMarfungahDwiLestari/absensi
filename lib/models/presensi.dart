@@ -5,6 +5,7 @@ class Presensi {
   final String nama;
   final String kehadiran;
   final String statusPembayaran;
+  final bool isEditable;
 
   Presensi({
     required this.timestamp,
@@ -13,6 +14,7 @@ class Presensi {
     required this.nama,
     required this.kehadiran,
     required this.statusPembayaran,
+    this.isEditable = true
   });
 
   factory Presensi.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Presensi {
       nama: json['Nama']?.toString() ?? '',
       kehadiran: json['Kehadiran']?.toString() ?? '',
       statusPembayaran: json['Status Pembayaran']?.toString() ?? '',
+      isEditable: json['isEditable'] ?? true,
     );
   }
 
