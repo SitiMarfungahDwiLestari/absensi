@@ -3,25 +3,25 @@ import 'package:intl/intl.dart';
 class Siswa {
   final String timestamp;
   final String kodeSiswa;
-  String namaLengkap; // Mutable untuk update
-  DateTime tanggalLahir; // Mutable untuk update
-  String jenisKelamin; // Mutable untuk update
-  String alamat; // Mutable untuk update
-  String pilihanKelas; // Mutable untuk update
-  String noHpEmail; // Mutable untuk update
-  String namaOrangTua; // Mutable untuk update
-  String noHpOrangTua; // Mutable untuk update
-  String asalSekolahReguler; // Mutable untuk update
-  String kelasReguler; // Mutable untuk update
-  String mataPelajaranPilihan; // Mutable untuk update
-  String asalSekolahLolos; // Mutable untuk update
-  String kelasLoslosSekolah; // Mutable untuk update
-  String pilihanSekolah; // Mutable untuk update
-  String kelasLolosPT; // Mutable untuk update
-  String jurusanSMA; // Mutable untuk update
-  String mataPelajaranPilihanSMA; // Mutable untuk update
-  String pilihanJurusanPT; // Mutable untuk update
-  String statusPembayaran; // Mutable untuk update
+  String namaLengkap; 
+  DateTime tanggalLahir; 
+  String jenisKelamin; 
+  String alamat; 
+  String pilihanKelas; 
+  String noHpEmail; 
+  String namaOrangTua; 
+  String noHpOrangTua; 
+  String asalSekolahReguler; 
+  String kelasReguler; 
+  String mataPelajaranPilihan; 
+  String asalSekolahLolos; 
+  String kelasLoslosSekolah; 
+  String pilihanSekolah; 
+  String kelasLolosPT; 
+  String jurusanSMA; 
+  String mataPelajaranPilihanSMA; 
+  String pilihanJurusanPT; 
+  String statusPembayaran; 
   final Map<String, dynamic>? qrCode;
 
   Siswa({

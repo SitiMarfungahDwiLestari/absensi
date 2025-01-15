@@ -116,7 +116,6 @@ class _RekapPresensiState extends State<RekapPresensi> {
                                     DataColumn(label: Text('Kehadiran')),
                                     DataColumn(
                                         label: Text('Status Pembayaran')),
-                                    DataColumn(label: Text('Aksi')),
                                   ],
                                   rows:
                                       presensiList.asMap().entries.map((entry) {
@@ -135,68 +134,6 @@ class _RekapPresensiState extends State<RekapPresensi> {
                                         DataCell(Text(presensi.kehadiran)),
                                         DataCell(
                                             Text(presensi.statusPembayaran)),
-                                        DataCell(
-                                          Row(
-                                            children: [
-                                              TextButton(
-                                                onPressed: () {},
-                                                style: TextButton.styleFrom(
-                                                  backgroundColor: Colors
-                                                      .blue, // Atur warna latar belakang tombol edit
-                                                ),
-                                                child: Text(
-                                                  'Edit',
-                                                  style: TextStyle(
-                                                    color: Colors
-                                                        .white, // Atur warna teks tombol edit
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              TextButton(
-                                                onPressed: () {
-                                                  // Aksi saat tombol delete ditekan
-                                                  // Misalnya, tampilkan dialog konfirmasi sebelum menghapus
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        AlertDialog(
-                                                      title: const Text(
-                                                          'Konfirmasi'),
-                                                      content: const Text(
-                                                          'Apakah Anda yakin ingin menghapus presensi ini?'),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          child: const Text(
-                                                              'Batal'),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () {},
-                                                          child: const Text(
-                                                              'Hapus'),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                                style: TextButton.styleFrom(
-                                                  backgroundColor: Colors
-                                                      .red, // Atur warna latar belakang tombol hapus
-                                                ),
-                                                child: Text(
-                                                  'Hapus',
-                                                  style: TextStyle(
-                                                    color: Colors
-                                                        .white, // Atur warna teks tombol hapus
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                       color: MaterialStateProperty.resolveWith<
                                           Color?>(

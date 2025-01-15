@@ -190,198 +190,196 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: StreamBuilder<List<Presensi>>(
-                      stream: getPresensiHariIniStream(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.event_busy,
-                                    size: 64, color: Colors.grey),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Belum ada data presensi hari ini',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        var presensiList = snapshot.data!;
-
-                        return SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            showCheckboxColumn: false,
-                            columns: const [
-                              DataColumn(label: Text('Waktu')),
-                              DataColumn(label: Text('Kode')),
-                              DataColumn(label: Text('Nama')),
-                              DataColumn(label: Text('Kehadiran')),
-                              DataColumn(label: Text('Status')),
-                              DataColumn(label: Text('Aksi')),
-                            ],
-                            rows: presensiList.map((presensi) {
-                              bool isPresensiEditable(String statusPembayaran) {
-                                // Records can be edited if status is "Lunas" or empty
-                                return statusPembayaran == 'Lunas' ||
-                                    statusPembayaran.isEmpty;
-                              }
-
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(
-                                      formatTimestamp(presensi.timestamp))),
-                                  DataCell(Text(presensi.kodeGuruSiswa)),
-                                  DataCell(Text(presensi.nama)),
-                                  DataCell(
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
-                                      decoration: BoxDecoration(
-                                        color: getKehadiranColor(
-                                                presensi.kehadiran)
-                                            .withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(4.0),
-                                      ),
-                                      child: presensi.isEditable
-                                          ? DropdownButton<String>(
-                                              value: presensi.kehadiran,
-                                              items: ['H', 'I', 'S', 'A']
-                                                  .map((String value) {
-                                                return DropdownMenuItem<String>(
-                                                  value: value,
-                                                  child: Text(
-                                                    value == 'H'
-                                                        ? 'Hadir'
-                                                        : value == 'I'
-                                                            ? 'Izin'
-                                                            : value == 'S'
-                                                                ? 'Sakit'
-                                                                : value == 'A'
-                                                                    ? 'Alpha'
-                                                                    : value,
-                                                    style: TextStyle(
-                                                      color: getKehadiranColor(
-                                                          value),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                );
-                                              }).toList(),
-                                              onChanged: (String? newValue) {
-                                                if (newValue != null) {
-                                                  updateKehadiran(
-                                                      presensi.kodePresensi,
-                                                      newValue);
-                                                }
-                                              },
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                              underline: Container(height: 0),
-                                              icon: Icon(Icons.arrow_drop_down,
-                                                  color: getKehadiranColor(
-                                                      presensi.kehadiran)),
-                                            )
-                                          : Text(
-                                              presensi.kehadiran == 'H'
-                                                  ? 'Hadir'
-                                                  : presensi.kehadiran == 'I'
-                                                      ? 'Izin'
-                                                      : presensi.kehadiran ==
-                                                              'S'
-                                                          ? 'Sakit'
-                                                          : presensi.kehadiran ==
-                                                                  'A'
-                                                              ? 'Alpha'
-                                                              : presensi
-                                                                  .kehadiran,
-                                              style: TextStyle(
-                                                color: getKehadiranColor(
-                                                    presensi.kehadiran),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  DataCell(Text(presensi.statusPembayaran)),
-                                  DataCell(
-                                    Row(
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {},
-                                          style: TextButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.blueGrey[50]),
-                                          child: Text(
-                                            'Edit',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        TextButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: const Text('Konfirmasi'),
-                                                content: const Text(
-                                                    'Apakah Anda yakin ingin menghapus presensi ini?'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: const Text('Batal'),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      deletePresensi(presensi
-                                                          .kodePresensi);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Hapus'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: Colors.red[400],
-                                          ),
-                                          child: Text(
-                                            'Hapus',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: StreamBuilder<List<Presensi>>(
+                        stream: getPresensiHariIniStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.event_busy,
+                                      size: 64, color: Colors.grey),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Belum ada data presensi hari ini',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
                                     ),
                                   ),
                                 ],
-                              );
-                            }).toList(),
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          }
+
+                          var presensiList = snapshot.data!;
+
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              showCheckboxColumn: false,
+                              columns: const [
+                                DataColumn(label: Text('Waktu')),
+                                DataColumn(label: Text('Kode')),
+                                DataColumn(label: Text('Nama')),
+                                DataColumn(label: Text('Kehadiran')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('')),
+                              ],
+                              rows: presensiList.map((presensi) {
+                                bool isPresensiEditable(
+                                    String statusPembayaran) {
+                                  // Records can be edited if status is "Lunas" or empty
+                                  return statusPembayaran == 'Lunas' ||
+                                      statusPembayaran.isEmpty;
+                                }
+
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Text(
+                                        formatTimestamp(presensi.timestamp))),
+                                    DataCell(Text(presensi.kodeGuruSiswa)),
+                                    DataCell(Text(presensi.nama)),
+                                    DataCell(
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        decoration: BoxDecoration(
+                                          color: getKehadiranColor(
+                                                  presensi.kehadiran)
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(4.0),
+                                        ),
+                                        child: presensi.isEditable
+                                            ? DropdownButton<String>(
+                                                value: presensi.kehadiran,
+                                                items: ['H', 'I', 'S', 'A']
+                                                    .map((String value) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: value,
+                                                    child: Text(
+                                                      value == 'H'
+                                                          ? 'Hadir'
+                                                          : value == 'I'
+                                                              ? 'Izin'
+                                                              : value == 'S'
+                                                                  ? 'Sakit'
+                                                                  : value == 'A'
+                                                                      ? 'Alpha'
+                                                                      : value,
+                                                      style: TextStyle(
+                                                        color:
+                                                            getKehadiranColor(
+                                                                value),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (String? newValue) {
+                                                  if (newValue != null) {
+                                                    updateKehadiran(
+                                                        presensi.kodePresensi,
+                                                        newValue);
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                                underline: Container(height: 0),
+                                                icon: Icon(
+                                                    Icons.arrow_drop_down,
+                                                    color: getKehadiranColor(
+                                                        presensi.kehadiran)),
+                                              )
+                                            : Text(
+                                                presensi.kehadiran == 'H'
+                                                    ? 'Hadir'
+                                                    : presensi.kehadiran == 'I'
+                                                        ? 'Izin'
+                                                        : presensi.kehadiran ==
+                                                                'S'
+                                                            ? 'Sakit'
+                                                            : presensi.kehadiran ==
+                                                                    'A'
+                                                                ? 'Alpha'
+                                                                : presensi
+                                                                    .kehadiran,
+                                                style: TextStyle(
+                                                  color: getKehadiranColor(
+                                                      presensi.kehadiran),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                    DataCell(Text(presensi.statusPembayaran)),
+                                    DataCell(
+                                      Row(
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title:
+                                                      const Text('Konfirmasi'),
+                                                  content: const Text(
+                                                      'Apakah Anda yakin ingin menghapus presensi ini?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child:
+                                                          const Text('Batal'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        deletePresensi(presensi
+                                                            .kodePresensi);
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child:
+                                                          const Text('Hapus'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: Colors.red[400],
+                                            ),
+                                            child: Text(
+                                              'Hapus',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
